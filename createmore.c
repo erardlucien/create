@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "iscreated.h"
+
+int main(int argc, char **argv) {
+    if(argc < 2) {
+        fprintf(stderr, "!!!No filename was given!!!");
+        return EXIT_FAILURE;
+    }
+
+    for(int i = 0; i < argc; ++i) {
+        const char *FILENAME = argv[i];
+        FILE *FILEPOINTER = fopen(FILENAME, "w+");
+        fclose(FILEPOINTER);
+
+        if(access(FILENAME, F_OK) == 0) {
+            printf("%s was successfully created!\n", FILENAME);
+        } else {
+            fprintf(stderr, "!!!%s was not created!!!\n", FILENAME);
+        }
+
+    }
+
+    return EXIT_SUCCESS;
+}

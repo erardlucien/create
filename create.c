@@ -1,14 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#ifdef _WIN32
-#include <io.h>
-#define F_OK 0
-#define access _access
-#else
-#include <unistd.h>
-#endif
+#include "iscreated.h"
 
 void write_to_file(
     char *filename,
