@@ -4,12 +4,18 @@
 
 int main(int argc, char **argv) {
     if(argc < 2) {
-        fprintf(stderr, "!!!No filename was given!!!");
+        fprintf(stderr, "!!!No filename was given!!!\n");
         return EXIT_FAILURE;
     }
 
-    for(int i = 0; i < argc; ++i) {
+    for(int i = 1; i < argc; ++i) {
         const char *FILENAME = argv[i];
+
+        if(access(FILENAME, F_OK) == 0) {
+            fprintf(stderr, "!!!%s exist already!!!\n", FILENAME);
+            return EXIT_FAILURE;
+        }
+        
         FILE *FILEPOINTER = fopen(FILENAME, "w+");
         fclose(FILEPOINTER);
 

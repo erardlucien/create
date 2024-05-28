@@ -11,5 +11,5 @@ other arguments, they will printed with
 'import' at the beginning of each new line followed 
 with the orther arguments.
 createmore -> create more file at once
-- You can also use to create one file, but it is better
+- You can also use it to create one file, but it is better
 to used it, when you need to create more files.
