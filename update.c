@@ -46,13 +46,11 @@ int main(int argc, char **argv) {
         strncpy(text_to_repeat, argv[2], LENGTH);
         strncat(text_to_repeat, " ", LENGTH);
         update_file(filename, argv, argc, 3, text_to_repeat);
+        free(text_to_repeat);
     } else {
-        text_to_repeat = malloc(2 * sizeof(char));
         text_to_repeat = "";
         update_file(filename, argv, argc, 2, text_to_repeat);
     }
-
-    free(text_to_repeat);
 
     printf("%s was succefully updated!\n", filename);
 
