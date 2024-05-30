@@ -1,6 +1,6 @@
 # create
 
-create -> create a file
+## create -> create a file
 - The first arguments represent the filename,
 which will created.
 - When you give more than once arguments
@@ -10,8 +10,10 @@ be printed in the file.
 other arguments, they will printed with 
 'import' at the beginning of each new line followed 
 with the orther arguments.
-createmore -> create more file at once
+
+## createmore -> create more file at once
 - You can also use to create one file, but it is better
 - You can also use it to create one file, but it is better
 to used it, when you need to create more files.
--update -> to change the file at the endline. 
+
+## update -> to change the file at the endline. 
