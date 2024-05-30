@@ -10,16 +10,6 @@ void write_to_file(
     int start, 
     char *text_to_repeat
 ) {
-    FILE *filepointer = fopen(filename, "w+");
-
-    for(int i = start; i < argc; ++i) {
-        if(i == start) {
-            fprintf(filepointer, "%s%s", text_to_repeat, argv[i]);
-        } else {
-            fprintf(filepointer, "\n%s%s", text_to_repeat, argv[i]);
-        }
-    }
-    
     if(access(filename, F_OK) == 0) {
         fprintf(stderr, "!!!%s exist already!!!\n", filename);
         return;
