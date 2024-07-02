@@ -1,21 +1,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "iscreated.h"add
+#include <math.h>
+#include "iscreated.h"
 
 void write_to_file(
-    char *filename,
+    char *filepath,
     char **argv,
     int argc,
     int start, 
     char *text_to_repeat
 ) {
-    if(access(filename, F_OK) == 0) {
-        fprintf(stderr, "!!!%s exist already!!!\n", filename);
+    if(access(filepath, F_OK) == 0) {
+        fprintf(stderr, "!!!%s exist already!!!\n", filepath);
         return;
     }
 
-    FILE *filepointer = fopen(filename, "w+");
+    FILE *filepointer = fopen(filepath, "w+");
 
     for(int i = start; i < argc; ++i) {
         if(strcmp(argv[i], "") != 0) {
@@ -26,12 +27,26 @@ void write_to_file(
     fclose(filepointer);
 }
 
+size_t length_before_filename(char *filepath) {
+    size_t length = strlen(filepath) + 1;
+    size_t i = strlen(filepath) - 1;
+    while(
+        i < length - 1
+        && filepath[i] != '/'
+        && filepath[i] != '\\'
+    ) {
+        --i;
+    }
+
+    return i + 1;
+}
+
 void create_file(int argc, char **argv) {
-    char *filename = argv[1];
+    char *filepath = argv[1];
     char *text_to_repeat;
 
-    if(access(filename, F_OK) == 0) {
-        fprintf(stderr, "!!!%s exist already!!!\n", filename);
+    if(access(filepath, F_OK) == 0) {
+        fprintf(stderr, "!!!%s exist already!!!\n", filepath);
         return;
     } 
 
@@ -40,24 +55,28 @@ void create_file(int argc, char **argv) {
         text_to_repeat = malloc(LENGTH * sizeof(char));
         strncpy(text_to_repeat, argv[2], LENGTH);
         strncat(text_to_repeat, " ", LENGTH);
-        write_to_file(filename, argv, argc, 3, text_to_repeat);
+        write_to_file(filepath, argv, argc, 3, text_to_repeat);
         free(text_to_repeat);
     } else {
         text_to_repeat = "";
-        write_to_file(filename, argv, argc, 2, text_to_repeat);
+        write_to_file(filepath, argv, argc, 2, text_to_repeat);
     }
 
-    if(access(filename, F_OK) == 0) {
-        printf("%s was successfully created!\n", filename);
+    if(access(filepath, F_OK) == 0) {
+        printf("%s was successfully created!\n", filepath);
     } else {
-        fprintf(stderr, "!!!%s was not created!!!\n", filename);
+        fprintf(stderr, "!!!%s was not created!!!\n", filepath);
     }
 
-    if(strstr(filename, "py") != NULL) {
+    if(strstr(filepath, "py") != NULL) {
         char **argv2 = (char **) malloc(argc * sizeof(*argv));
+        char *filename = "requirements.txt";
+        size_t length = length_before_filename(argv[1]);
         for(int i = 0; i < argc; ++i) {
             if(i == 1) {
-                argv2[1] = "requirements.txt";
+                argv2[1] = (char *) malloc( ( abs( length + strlen(filename) ) + 1) * sizeof(char));
+                strncpy(argv2[1], argv[1], length);
+                strcat(argv2[1], filename);
             } else if(i == 2 && strcmp(argv[i], "import") == 0) {
                 argv2[2] = "";
             } else {
@@ -73,7 +92,7 @@ int main(int argc, char **argv) {
     if(argc > 1) {
         create_file(argc, argv);
     } else {
-        fprintf(stderr, "!!!No filename was given!!!");
+        fprintf(stderr, "!!!No filepath was given!!!");
         return EXIT_FAILURE;
     }
 

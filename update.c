@@ -4,22 +4,22 @@
 #include "iscreated.h"
 
 void update_file(
-    char *filename,
+    char *filepath,
     char **argv, 
     int argc,
     int start,
     char *text_to_repeat
 ) {
     
-    if(access(filename, F_OK) != 0) {
-        fprintf(stderr, "!!!%s doesn't exist!!!\n", filename);
+    if(access(filepath, F_OK) != 0) {
+        fprintf(stderr, "!!!%s doesn't exist!!!\n", filepath);
         return;
     }
 
-    FILE *filepointer = fopen(filename, "a");
+    FILE *filepointer = fopen(filepath, "a");
 
     if(filepointer == NULL) {
-        printf("!!!%s doesn't exist!!!", filename);
+        printf("!!!%s doesn't exist!!!", filepath);
     }
 
     for(int i = start; i < argc; ++i) {
@@ -30,13 +30,13 @@ void update_file(
 }
 
 int main(int argc, char **argv) {
-    char *filename = "";
+    char *filepath = "";
     char *text_to_repeat;
 
     if(argc > 1) {
-        filename = argv[1];
+        filepath = argv[1];
     } else {
-        fprintf(stderr, "!!!No filename was given!!!\n");
+        fprintf(stderr, "!!!No filepath was given!!!\n");
         return EXIT_FAILURE;
     }
 
@@ -45,14 +45,14 @@ int main(int argc, char **argv) {
         text_to_repeat = malloc(LENGTH * sizeof(char));
         strncpy(text_to_repeat, argv[2], LENGTH);
         strncat(text_to_repeat, " ", LENGTH);
-        update_file(filename, argv, argc, 3, text_to_repeat);
+        update_file(filepath, argv, argc, 3, text_to_repeat);
         free(text_to_repeat);
     } else {
         text_to_repeat = "";
-        update_file(filename, argv, argc, 2, text_to_repeat);
+        update_file(filepath, argv, argc, 2, text_to_repeat);
     }
 
-    printf("%s was succefully updated!\n", filename);
+    printf("%s was succefully updated!\n", filepath);
 
     return EXIT_SUCCESS;
 }
