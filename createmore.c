@@ -2,32 +2,32 @@
 #include <stdlib.h>
 #include "iscreated.h"
 
-void create_file(const char *FILENAME) {
-    FILE *FILEPOINTER = fopen(FILENAME, "w+");
+void create_file(const char *FILEPATH) {
+    FILE *FILEPOINTER = fopen(FILEPATH, "w+");
     fclose(FILEPOINTER);
 
-    if(access(FILENAME, F_OK) == 0) {
-        printf("%s was successfully created!\n", FILENAME);
+    if(access(FILEPATH, F_OK) == 0) {
+        printf("%s was successfully created!\n", FILEPATH);
     } else {
-        fprintf(stderr, "!!!%s was not created!!!\n", FILENAME);
+        fprintf(stderr, "!!!%s was not created!!!\n", FILEPATH);
     }
 }
 
 void create_more_file(char **argv, int argc) {
     for(int i = 1; i < argc; ++i) {
-        const char *FILENAME = argv[i];
+        const char *FILEPATH = argv[i];
 
-        if(access(FILENAME, F_OK) == 0) {
-            fprintf(stderr, "!!!%s exist already!!!\n", FILENAME);
+        if(access(FILEPATH, F_OK) == 0) {
+            fprintf(stderr, "!!!%s exist already!!!\n", FILEPATH);
         } else {
-            create_file(FILENAME);
+            create_file(FILEPATH);
         }
     }
 }
 
 int main(int argc, char **argv) {
     if(argc < 2) {
-        fprintf(stderr, "!!!No filename was given!!!");
+        fprintf(stderr, "!!!No filepath was given!!!");
         return EXIT_FAILURE;
     }
 
