@@ -68,7 +68,10 @@ void create_file(int argc, char **argv) {
         fprintf(stderr, "!!!%s was not created!!!\n", filepath);
     }
 
-    if(strstr(filepath, "py") != NULL) {
+    if(
+        strstr(filepath, "py") != NULL
+        && strcmp(argv[2], "import") == 0
+    ) {
         char **argv2 = (char **) malloc(argc * sizeof(*argv));
         char *filename = "requirements.txt";
         size_t length = length_before_filename(argv[1]);
