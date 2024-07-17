@@ -69,7 +69,8 @@ void create_file(int argc, char **argv) {
     }
 
     if(
-        strstr(filepath, "py") != NULL
+        argc > 2
+        && strstr(filepath, "py") != NULL
         && strcmp(argv[2], "import") == 0
     ) {
         char **argv2 = (char **) malloc(argc * sizeof(*argv));
