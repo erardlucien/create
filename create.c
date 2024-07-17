@@ -27,20 +27,6 @@ void write_to_file(
     fclose(filepointer);
 }
 
-size_t length_before_filename(char *filepath) {
-    size_t length = strlen(filepath) + 1;
-    size_t i = strlen(filepath) - 1;
-    while(
-        i < length - 1
-        && filepath[i] != '/'
-        && filepath[i] != '\\'
-    ) {
-        --i;
-    }
-
-    return i + 1;
-}
-
 void create_file(int argc, char **argv) {
     char *filepath = argv[1];
     char *text_to_repeat;
@@ -66,28 +52,6 @@ void create_file(int argc, char **argv) {
         printf("%s was successfully created!\n", filepath);
     } else {
         fprintf(stderr, "!!!%s was not created!!!\n", filepath);
-    }
-
-    if(
-        strstr(filepath, "py") != NULL
-        && strcmp(argv[2], "import") == 0
-    ) {
-        char **argv2 = (char **) malloc(argc * sizeof(*argv));
-        char *filename = "requirements.txt";
-        size_t length = length_before_filename(argv[1]);
-        for(int i = 0; i < argc; ++i) {
-            if(i == 1) {
-                argv2[1] = (char *) malloc( ( abs( length + strlen(filename) ) + 1) * sizeof(char));
-                strncpy(argv2[1], argv[1], length);
-                strcat(argv2[1], filename);
-            } else if(i == 2 && strcmp(argv[i], "import") == 0) {
-                argv2[2] = "";
-            } else {
-                argv2[i] = (char *) malloc(sizeof(argv));
-                strcpy(argv2[i], argv[i]);
-            }
-        }
-        create_file(argc, argv2);
     }
 }
 
