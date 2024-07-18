@@ -3,14 +3,14 @@
 #include "iscreated.h"
 
 void create_file(const char *FILEPATH) {
-    struct stat st;
-    
-    if(stat(FILEPATH, &st) < 0) {
+
+    FILE *FILEPOINTER = fopen(FILEPATH, "w+");
+
+    if(FILEPOINTER == NULL) {
         fprintf(stderr, "!!!%s is not a valid path!!!\n", FILEPATH);
         return;
     }
 
-    FILE *FILEPOINTER = fopen(FILEPATH, "w+");
     fclose(FILEPOINTER);
 
     if(access(FILEPATH, F_OK) == 0) {
