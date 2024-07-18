@@ -35,6 +35,10 @@ void update_file(
     fclose(filepointer);
 }
 
+void printSuccessMsg(char *filepath) {
+    printf("%s was succefully updated!\n", filepath);
+}
+
 int main(int argc, char **argv) {
     char *filepath = "";
     char *text_to_repeat;
@@ -53,12 +57,12 @@ int main(int argc, char **argv) {
         strncat(text_to_repeat, " ", LENGTH);
         update_file(filepath, argv, argc, 3, text_to_repeat);
         free(text_to_repeat);
+        printSuccessMsg(filepath);
     } else {
         text_to_repeat = "";
         update_file(filepath, argv, argc, 2, text_to_repeat);
+        printSuccessMsg(filepath);
     }
-
-    printf("%s was succefully updated!\n", filepath);
 
     return EXIT_SUCCESS;
 }
