@@ -30,6 +30,12 @@ void write_to_file(
 void create_file(int argc, char **argv) {
     char *filepath = argv[1];
     char *text_to_repeat;
+    struct stat st;
+    
+    if(stat(filepath, &st) < 0) {
+        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
+        return;
+    }
 
     if(access(filepath, F_OK) == 0) {
         fprintf(stderr, "!!!%s exist already!!!\n", filepath);
