@@ -3,6 +3,13 @@
 #include "iscreated.h"
 
 void create_file(const char *FILEPATH) {
+    struct stat st;
+    
+    if(stat(FILEPATH, &st) < 0) {
+        fprintf(stderr, "!!!%s is not a valid path!!!\n", FILEPATH);
+        return;
+    }
+
     FILE *FILEPOINTER = fopen(FILEPATH, "w+");
     fclose(FILEPOINTER);
 
@@ -27,7 +34,7 @@ void create_more_file(char **argv, int argc) {
 
 int main(int argc, char **argv) {
     if(argc < 2) {
-        fprintf(stderr, "!!!No filepath was given!!!");
+        fprintf(stderr, "!!!No FILEPATH was given!!!");
         return EXIT_FAILURE;
     }
 

@@ -10,6 +10,12 @@ void update_file(
     int start,
     char *text_to_repeat
 ) {
+    struct stat st;
+
+    if(stat(filepath, &st) < 0) {
+        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
+        return;
+    }
     
     if(access(filepath, F_OK) != 0) {
         fprintf(stderr, "!!!%s doesn't exist!!!\n", filepath);
