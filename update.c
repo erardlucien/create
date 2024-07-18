@@ -10,12 +10,6 @@ void update_file(
     int start,
     char *text_to_repeat
 ) {
-    struct stat st;
-
-    if(stat(filepath, &st) < 0) {
-        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
-        return;
-    }
     
     if(access(filepath, F_OK) != 0) {
         fprintf(stderr, "!!!%s doesn't exist!!!\n", filepath);
@@ -35,6 +29,10 @@ void update_file(
     fclose(filepointer);
 }
 
+void printSuccessMsg(char *filepath) {
+    printf("%s was succefully updated!\n", filepath);
+}
+
 int main(int argc, char **argv) {
     char *filepath = "";
     char *text_to_repeat;
@@ -43,6 +41,13 @@ int main(int argc, char **argv) {
         filepath = argv[1];
     } else {
         fprintf(stderr, "!!!No filepath was given!!!\n");
+        return EXIT_FAILURE;
+    }
+
+    struct stat st;
+
+    if(stat(filepath, &st) < 0) {
+        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
         return EXIT_FAILURE;
     }
 
@@ -58,7 +63,7 @@ int main(int argc, char **argv) {
         update_file(filepath, argv, argc, 2, text_to_repeat);
     }
 
-    printf("%s was succefully updated!\n", filepath);
+    printSuccessMsg(filepath);
 
     return EXIT_SUCCESS;
 }
