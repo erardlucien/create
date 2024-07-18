@@ -10,12 +10,6 @@ void update_file(
     int start,
     char *text_to_repeat
 ) {
-    struct stat st;
-
-    if(stat(filepath, &st) < 0) {
-        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
-        return;
-    }
     
     if(access(filepath, F_OK) != 0) {
         fprintf(stderr, "!!!%s doesn't exist!!!\n", filepath);
@@ -50,6 +44,13 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
+    struct stat st;
+
+    if(stat(filepath, &st) < 0) {
+        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
+        return EXIT_FAILURE;
+    }
+
     if(argc > 3 && strcmp(argv[2], "import") == 0){
         const unsigned long LENGTH = strlen(argv[2]) + 2;
         text_to_repeat = malloc(LENGTH * sizeof(char));
@@ -57,12 +58,12 @@ int main(int argc, char **argv) {
         strncat(text_to_repeat, " ", LENGTH);
         update_file(filepath, argv, argc, 3, text_to_repeat);
         free(text_to_repeat);
-        printSuccessMsg(filepath);
     } else {
         text_to_repeat = "";
         update_file(filepath, argv, argc, 2, text_to_repeat);
-        printSuccessMsg(filepath);
     }
+
+    printSuccessMsg(filepath);
 
     return EXIT_SUCCESS;
 }
