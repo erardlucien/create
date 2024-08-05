@@ -7,7 +7,7 @@ void create_file(const char *FILEPATH) {
     FILE *FILEPOINTER = fopen(FILEPATH, "w+");
 
     if(FILEPOINTER == NULL) {
-        fprintf(stderr, "!!!%s is not a valid path!!!\n", FILEPATH);
+        fprintf(stderr, "!!!A error occured!!!\n");
         return;
     }
 
