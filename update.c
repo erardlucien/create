@@ -23,7 +23,7 @@ int update_file(
     FILE *filepointer = fopen(filepath, "a");
 
     if(filepointer == NULL) {
-        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
+        fprintf(stderr, "!!!A error occured!!!\n");
         return EXIT_FAILURE;
     }
 

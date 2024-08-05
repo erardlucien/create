@@ -19,7 +19,7 @@ void write_to_file(
     FILE *filepointer = fopen(filepath, "w+");
 
     if(filepointer == NULL) {
-        fprintf(stderr, "!!!%s is not a valid path!!!\n", filepath);
+        fprintf(stderr, "!!!A error occured!!!\n");
         return;
     }
 
