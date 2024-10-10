@@ -52,19 +52,19 @@ bool existed_already(char *directory) {
 }
 
 int create_directory_from(char *filepath) {
-    int result = -2;
+    int result = 0;
 
     #ifdef __linux__
         char * directory = retrieve_path_directory_in('/', filepath);
         if(existed_already(directory)) {
-            fprintf(stderr, "!!!%s exist already!!!\n", directory);
+            printf("!!!%s exist already!!!\n", directory);
             return result;
         }
         result = mkdir(directory, 0700);
     #else
         char * directory = retrieve_path_directory_in('\\', filepath);
         if(existed_already(directory)) {
-            fprintf(stderr, "!!!%s exist already!!!\n", directory);
+            printf("!!!%s exist already!!!\n", directory);
             return result;
         }
         result = _mkdir(directory, filepath));
@@ -86,6 +86,12 @@ void create_file_and_dir(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
+    
+    if(argc < 2) {
+        fprintf(stderr, "!!!No FILEPATH was given!!!");
+        return EXIT_FAILURE;
+    }
+
     create_file_and_dir(argc, argv);
 
     return EXIT_SUCCESS;

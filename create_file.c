@@ -2,6 +2,11 @@
 
 void create_file(const char *FILEPATH) {
 
+    if(access(FILEPATH, F_OK) == 0) {
+        printf("!!!%s exist already!!!\n", FILEPATH);
+        return;
+    }
+
     FILE *FILEPOINTER = fopen(FILEPATH, "w+");
 
     if(FILEPOINTER == NULL) {
