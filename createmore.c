@@ -1,24 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "iscreated.h"
-
-void create_file(const char *FILEPATH) {
-
-    FILE *FILEPOINTER = fopen(FILEPATH, "w+");
-
-    if(FILEPOINTER == NULL) {
-        fprintf(stderr, "!!!A error occured!!!\n");
-        return;
-    }
-
-    fclose(FILEPOINTER);
-
-    if(access(FILEPATH, F_OK) == 0) {
-        printf("%s was successfully created!\n", FILEPATH);
-    } else {
-        fprintf(stderr, "!!!%s was not created!!!\n", FILEPATH);
-    }
-}
+#include "create_file.h"
 
 void create_more_file(char **argv, int argc) {
     for(int i = 1; i < argc; ++i) {
