@@ -56,6 +56,9 @@ int create_directory_from(char *filepath) {
 
     #ifdef __linux__
         char * directory = retrieve_path_directory_in('/', filepath);
+        if(directory = "") {
+            return 0;
+        }
         if(existed_already(directory)) {
             fprintf(stderr, "!!!%s exist already!!!\n", directory);
             return result;
@@ -63,6 +66,9 @@ int create_directory_from(char *filepath) {
         result = mkdir(directory, 0700);
     #else
         char * directory = retrieve_path_directory_in('\\', filepath);
+        if(directory = "") {
+            return 0;
+        }
         if(existed_already(directory)) {
             fprintf(stderr, "!!!%s exist already!!!\n", directory);
             return result;
