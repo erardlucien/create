@@ -49,6 +49,10 @@ char *retrieve_path_directory_in(char character, char *filepath) {
 
 bool is_valid(char character, char *filepath) {
 
+    if(count('.', filepath) != 1) {
+        return false;
+    }
+
     for(int i = 0; i < strlen(filepath); ++i) {
         if(
             !isalnum(filepath[i])
