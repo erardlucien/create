@@ -120,10 +120,6 @@ int create_directories_from(char *filepath, char character) {
             result = create_directory_from(directory);
             ++counter;
         }
-
-        if(result < 0) {
-            return result;
-        }
     }
 
     return result;
