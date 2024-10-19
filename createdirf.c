@@ -11,17 +11,6 @@
 #include <direct.h>
 #endif
 
-
-int indexOf(char character, char *text) {
-    for(int i = strlen(text); i > -1; --i) {
-        if(text[i] == character) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 int indexOfInRange(char character, char *text, int from, int to) {
     for(int i = from; i < to; i++) {
         if(text[i] == character) {
