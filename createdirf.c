@@ -7,8 +7,23 @@
 #include <ctype.h>
 #include "create_file.h"
 
+#ifndef __linux__
+#include <direct.h>
+#endif
+
+
 int indexOf(char character, char *text) {
     for(int i = strlen(text); i > -1; --i) {
+        if(text[i] == character) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int indexOfInRange(char character, char *text, int from, int to) {
+    for(int i = from; i < to; i++) {
         if(text[i] == character) {
             return i;
         }
@@ -28,25 +43,6 @@ int count(char character, char *text) {
     return result;
 }
 
-char *retrieve_path_directory_in(char character, char *filepath) {
-    int index = indexOf(character, filepath); 
-
-    if(index == -1) {
-        return "";
-    }
-
-    int length = index + 2;
-    char *result = (char *)malloc(length * sizeof(char));
-
-    for(int i = 0; i < length - 1; ++i) {
-        result[i] = filepath[i];
-    }
-
-    result[length - 1] = '\0';
-
-    return result;
-}
-
 bool is_valid(char character, char *filepath) {
 
     if(count('.', filepath) != 1) {
@@ -58,6 +54,7 @@ bool is_valid(char character, char *filepath) {
             !isalnum(filepath[i])
             && filepath[i] != character
             && filepath[i] != '.'
+            && filepath[i] != '_'
         ) {
             return false;
         }
@@ -84,14 +81,14 @@ int create_directory_from(char *directory_path) {
         }
         result = mkdir(directory_path, 0700);
     #else
-        if(strlen(directory) == 0) {
+        if(strlen(directory_path) == 0) {
             return 0;
         }
-        if(existed_already(directory)) {
-            printf("!!!%s exist already!!!\n", directory);
+        if(existed_already(directory_path)) {
+            printf("!!!%s exist already!!!\n", directory_path);
             return result;
         }
-        result = _mkdir(directory);
+        result = _mkdir(directory_path);
     #endif
 
     return result;
@@ -99,6 +96,7 @@ int create_directory_from(char *directory_path) {
 
 int create_directories_from(char *filepath, char character) {
     int counter = 0;
+    int from = 0;
     char *directory = "";
     int result = 0;
 
@@ -109,16 +107,16 @@ int create_directories_from(char *filepath, char character) {
         return -2;
     }
 
-    for(int i = 0; i < strlen(filepath) && counter < count(character, filepath); ++i) {
-        const char *TMP = directory;
-        const int LENGTH = strlen(directory) + 2;
-        directory = (char *)malloc(LENGTH * sizeof(char));
-        strcpy(directory, TMP);
-        directory[LENGTH - 2] = filepath[i];
+    const int FILEPATH_LENGTH = strlen(filepath);
+    for(int i = 0; i < FILEPATH_LENGTH && counter < count(character, filepath); ++i) {
         if(filepath[i] == character) {
+            const int LENGTH = indexOfInRange(character, filepath, from, FILEPATH_LENGTH) + 1;
+            directory = (char *)malloc(LENGTH * sizeof(char));
             directory[LENGTH - 1] = '\0';
+            strncpy(directory, filepath, LENGTH - 1);
             result = create_directory_from(directory);
             ++counter;
+            from = i + 1;
         }
     }
 
