@@ -16,4 +16,7 @@ with the orther arguments.
 - You can also use it to create one file, but it is better
 to used it, when you need to create more files.
 
-## update -> to change the file at the endline. 
+## update -> to change the file at the endline.
+
+## createdirf -> create directories and his subdirectories
+## and the file with only the filepath
