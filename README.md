@@ -18,5 +18,4 @@ to used it, when you need to create more files.
 
 ## update -> to change the file at the endline.
 
-## createdirf -> create directories and his subdirectories
-## and the file with only the filepath
+## createdirf -> create directories and his subdirectories and the file with only the filepath
