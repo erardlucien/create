@@ -61,19 +61,19 @@ int create_directory_from(char *directory_path) {
     int result = 0;
 
     #ifdef __linux__
-        if(strlen(directory_path) == 0) {
+        if( strlen(directory_path) == 0 || strcmp(directory_path, ".") == 0 ) {
             return result;
         }
-        if(existed_already(directory_path) && !strcmp(directory_path, ".") == 0) {
+        if(existed_already(directory_path) && strcmp(directory_path, ".") != 0 ) {
             printf("!!!%s exist already!!!\n", directory_path);
             return result;
         }
         result = mkdir(directory_path, 0700);
     #else
-        if(strlen(directory_path) == 0) {
+        if( strlen(directory_path) == 0 || strcmp(directory_path, ".") == 0 ) {
             return result;
         }
-        if(existed_already(directory_path) && !strcmp(directory_path, ".") == 0) {
+        if(existed_already(directory_path) && strcmp(directory_path, ".") != 0 ) {
             printf("!!!%s exist already!!!\n", directory_path);
             return result;
         }
