@@ -1,6 +1,9 @@
 # create
 
-## create -> create a file
+## create
+
+Create a file
+
 - The first arguments represent the filename,
 which will created.
 - When you give more than once arguments
@@ -11,11 +14,19 @@ other arguments, they will printed with
 'import' at the beginning of each new line followed 
 with the orther arguments.
 
-## createmore -> create more file at once
+## createmore
+
+Create more file at once
+
 - You can also use to create one file, but it is better
 - You can also use it to create one file, but it is better
 to used it, when you need to create more files.
 
-## update -> to change the file at the endline.
+## update
 
-## createdirf -> create directories and his subdirectories and the file with only the filepath
+Change the file at the endline
+
+## createdirf
+
+Create directories and his subdirectories and the file with only the filepath
+
