@@ -89,12 +89,21 @@ int create_directories_from(char *filepath, char character) {
     char *directory = "";
     int result = 0;
 
-    if( !( is_valid('/', filepath) || is_valid('\\', filepath) ) ) {
+    #ifdef __linux__
+    if( !is_valid('/', filepath) ) {
         fprintf(stderr, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
         fprintf(stderr, "%s\nis not valid\n", filepath);
         fprintf(stderr, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
         return -2;
     }
+    #else 
+    if( !is_valid('\\', filepath) ) {
+        fprintf(stderr, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        fprintf(stderr, "%s\nis not valid\n", filepath);
+        fprintf(stderr, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+        return -2;
+    }
+    #endif
 
     const int FILEPATH_LENGTH = strlen(filepath);
     for(int i = 0; i < FILEPATH_LENGTH && counter < count(character, filepath); ++i) {
