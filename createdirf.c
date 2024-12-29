@@ -144,7 +144,7 @@ void create_file_and_dir(int argc, char **argv) {
 int main(int argc, char **argv) {
     
     if(argc < 2) {
-        fprintf(stderr, "!!!No FILEPATH was given!!!");
+        fprintf(stderr, "!!!No FILEPATH was given!!!\n");
         return EXIT_FAILURE;
     }
 
