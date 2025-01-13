@@ -158,7 +158,7 @@ void create_file_and_dir(int argc, char **argv) {
             result = create_directories_from(argv[i], '\\');
         #endif
 
-        if(result != CREATE_SUCCESS || result != PATH_ALREADY_EXIST) {
+        if(result != CREATE_SUCCESS && result != PATH_ALREADY_EXIST) {
             fprintf(stderr, "!!!A failure has occurred!!!\n");
         } else {
             create_file(argv[i]);
