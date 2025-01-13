@@ -85,7 +85,7 @@ CreateState create_directory_from(char *directory_path) {
         }
         if(existed_already(directory_path) && strcmp(directory_path, ".") != 0 ) {
             printf("!!!%s exist already!!!\n", directory_path);
-            return ALREADY_EXIST;
+            return PATH_ALREADY_EXIST;
         }
         result = _mkdir(directory_path);
     #endif
