@@ -10,7 +10,7 @@ void create_file(const char *FILEPATH) {
     FILE *FILEPOINTER = fopen(FILEPATH, "w+");
 
     if(FILEPOINTER == NULL) {
-        fprintf(stderr, "!!!A error occured!!!\n");
+        fprintf(stderr, "!!!%s could not be created!!!\n", FILEPATH);
         return;
     }
 

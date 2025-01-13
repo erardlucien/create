@@ -12,7 +12,7 @@ enum CreateState {
     NOT_VALID,
     COULD_NOT_SET_PATH,
     CREATE_SUCCESS, 
-    ALREADY_EXIST
+    PATH_ALREADY_EXIST
 };
 
 typedef enum CreateState CreateState;
@@ -76,7 +76,7 @@ CreateState create_directory_from(char *directory_path) {
         }
         if(existed_already(directory_path) && strcmp(directory_path, ".") != 0 ) {
             printf("!!!%s exist already!!!\n", directory_path);
-            return ALREADY_EXIST;
+            return PATH_ALREADY_EXIST;
         }
         result = mkdir(directory_path, 0700);
     #else
@@ -158,7 +158,7 @@ void create_file_and_dir(int argc, char **argv) {
             result = create_directories_from(argv[i], '\\');
         #endif
 
-        if(result != CREATE_SUCCESS) {
+        if(result != CREATE_SUCCESS || result != PATH_ALREADY_EXIST) {
             fprintf(stderr, "!!!A failure has occurred!!!\n");
         } else {
             create_file(argv[i]);
