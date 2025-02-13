@@ -28,5 +28,14 @@ Change the file at the endline
 
 ## createdirf
 
-Create directories and his subdirectories and the file with only the filepath
+Create directories and his subdirectories, if they don't alreafy exist and the file with the help of the filepath.
+
+## Warning 
+
+The code was only tested in Windows and Linux.
+
+## Setup
+
+- gcc create_file.c createdirf.c -o mkdf
+- Add to system-variable depending of your operating system.
 
