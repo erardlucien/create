@@ -8,7 +8,8 @@
 #include "create_file.h"
 
 enum CreateState {
-    COULD_NOT_CREATE=-3,
+    COULD_NOT_CREATE=-4,
+    NO_FILENAME_WAS_GIVEN,
     NOT_VALID,
     COULD_NOT_SET_PATH,
     CREATE_SUCCESS, 
@@ -143,6 +144,10 @@ CreateState create_directories_from(char *filepath, char character) {
         }
     }
 
+    if(FILEPATH_LENGTH == strlen(directory) + 1) {
+        result = NO_FILENAME_WAS_GIVEN;
+    }
+
     return result;
 }
 
@@ -158,7 +163,9 @@ void create_file_and_dir(int argc, char **argv) {
             result = create_directories_from(argv[i], '\\');
         #endif
 
-        if(result != CREATE_SUCCESS && result != PATH_ALREADY_EXIST) {
+        if(result == NO_FILENAME_WAS_GIVEN) {
+            fprintf(stderr, "!!!No filename was given!!!\n");
+        } else if(result != CREATE_SUCCESS && result != PATH_ALREADY_EXIST) {
             fprintf(stderr, "!!!A failure has occurred!!!\n");
         } else {
             create_file(argv[i]);
