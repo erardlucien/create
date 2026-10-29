@@ -26,8 +26,12 @@ The code was only tested in Windows and Linux. It is only Windows and Linux.
 ## How to use it
 
 - Open your terminal
+
 > cmore filepath1 filepath2
+
 or
+
 > cdf filepath1 filepath2
+
 ** filepath1 could be C:\User\dummy\text.txt (for Windows) or \home\dummy\Documents\text.txt (for Linux) **
 
