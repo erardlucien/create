@@ -4,10 +4,8 @@
 
 Create more file at once
 
-- You can also use it to create one file, but it is better
-to used it, when you need to create more files.
-- The directory-path must exist.
-- It does not create subdirectories.
+- You can also use it to create a single file, but it is best suited for creating multiple files simultaneously.
+- **Note:** The directory path must already exist. This tool does not automatically create missing subdirectories.
 
 ## cdf
 
@@ -15,7 +13,7 @@ Create the file/files and its directory, its parent-directories, if they don't a
 
 ## Warning 
 
-The code was only tested in Windows and Linux. It work only Windows and Linux.
+The code was only tested in **Windows** and **Linux**. It is currently only guaranteed to work on these two operating systems.
 
 ## Setup
 
