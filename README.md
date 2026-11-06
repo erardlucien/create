@@ -34,5 +34,5 @@ or
 
 ```cdf filepath1 filepath2```
 
-*Èxample:* `C:\User\dummy\text.txt (for Windows)` or `\home\dummy\Documents\text.txt (for Linux)`
+*Example:* `C:\User\dummy\text.txt (for Windows)` or `\home\dummy\Documents\text.txt (for Linux)`
 
