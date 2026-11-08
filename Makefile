@@ -4,12 +4,12 @@ ifeq ($(OS),Windows_NT)
 MKDIR = if not exist bin mkdir bin
 RMDIR = rmdir /s /q
 BIN_DIR = bin
-UNINSTALL_DIR = ..\create_
+UNINSTALL_DIR = ..\create
 else
 MKDIR = mkdir -p ./bin
 RMDIR = rm -rf
 BIN_DIR = ./bin
-UNINSTALL_DIR = ../create_
+UNINSTALL_DIR = ../create
 endif
 
 .PHONY: all install clean uninstall
