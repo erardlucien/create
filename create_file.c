@@ -1,4 +1,5 @@
 #include "create_file.h"
+#include <string.h>
 
 void create_file(const char *FILEPATH) {
 
@@ -22,3 +23,13 @@ void create_file(const char *FILEPATH) {
         fprintf(stderr, "!!!%s was not created!!!\n", FILEPATH);
     }
 }
+
+
+ArgumentLengthValidation control(char *filepath) {
+    int actual_len = strnlen(filepath, PATH_MAX);
+    if(actual_len > PATH_MAX) {
+        return INVALID_ARGUMENT_LENGTH;
+    }
+  return VALID_ARGUMENT_LENGTH;
+}
+

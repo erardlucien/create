@@ -8,12 +8,13 @@
 #include "create_file.h"
 
 enum CreateState {
-    COULD_NOT_CREATE=-4,
-    NO_FILENAME_WAS_GIVEN,
-    NOT_VALID,
-    COULD_NOT_SET_PATH,
-    CREATE_SUCCESS, 
-    PATH_ALREADY_EXIST
+    COULD_NOT_CREATE = -6,
+    NO_FILENAME_WAS_GIVEN = -5,
+    NOT_VALID = -4,
+    COULD_NOT_SET_PATH = -3,
+    PATH_ALREADY_EXIST = -2,
+    PATH_TOO_LONG = -1,
+    CREATE_SUCCESS = 0,
 };
 
 typedef enum CreateState CreateState;
@@ -70,6 +71,12 @@ bool existed_already(char *directory) {
 
 CreateState create_directory_from(char *directory_path) {
     CreateState result = CREATE_SUCCESS;
+
+    if(control(directory_path) != VALID_ARGUMENT_LENGTH) {
+        fprintf(stderr, "!!!the filepath is too big!!!\n");
+        fprintf(stderr, "!!!The length of the path must be smaller than %d!!!\n", PATH_MAX);
+        return PATH_TOO_LONG;
+    }
 
     #ifdef __linux__
         if( strlen(directory_path) == 0 || strcmp(directory_path, ".") == 0 ) {
@@ -174,11 +181,22 @@ void create_file_and_dir(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    
+
     if(argc < 2) {
         fprintf(stderr, "!!!No FILEPATH was given!!!\n");
+        printf("Write cdf -h to see, how use this command\n");
         return EXIT_FAILURE;
-    }
+    } if(argc == 2 && strncmp(argv[1], HELP_TEXT, HELP_MAX_STR) == 0) {
+        printf("Create more than one file and  the parent-directories.\n");
+        printf("If the parents-directories are already created, then only the files will be created.\n");
+        printf("Use it like this:\n");
+        printf("cdf -h for help");
+        printf("cdf filepath\n");
+        printf("Or\n");
+        printf("cdf filepath1 filepath2 ...\n");
+        printf("... stand for more filepath could be given.\n");
+        return EXIT_SUCCESS; 
+    } 
 
     create_file_and_dir(argc, argv);
 
