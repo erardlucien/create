@@ -1,6 +1,7 @@
 # create
+  Generate two programs, use as command-line-interface.
 
-## cmore
+## cfmore
 
 Create more file at once
 
@@ -17,18 +18,21 @@ The code was only tested in **Windows** and **Linux**. It is currently only guar
 
 ## Setup
 
-1. Compile the tools using `gcc`:
-```
-gcc create_file.c createmore.c -o cmore
-gcc create_file.c createdirf.c -o  cdf
-```
-2. Add to system-variable depending of your operating system.
+1. Prerequisites `gcc` and `gnu make` must be installed
+2. How to install:
+```make install```
+3. Add the path to system-variable depending of your operating system.
+
+## How to uninstall
+1. How to uninstall:
+```make uninstall```
+2. Remove the path manually from the system-variable of your operating system.
 
 ## How to use it
 
 - Open your terminal
 
-```cmore filepath1 filepath2```
+```cfmoremore filepath1 filepath2```
 
 or
 

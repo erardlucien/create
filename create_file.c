@@ -1,7 +1,19 @@
 #include "create_file.h"
 #include <string.h>
+#include <ctype.h>
 
 void create_file(const char *FILEPATH) {
+
+    if(check_first_char(FILEPATH) == INVALID_FCHARACTER) {
+        fprintf(stderr, "!!!Invalid first character!!!\n");
+        return;
+    }
+   
+    if(control(FILEPATH) != VALID_ARGUMENT_LENGTH) {
+       fprintf(stderr, "!!!the filepath is too big!!!\n");
+       fprintf(stderr, "!!!The length of the path must be smaller than %d!!!\n", PATH_MAX);
+       return;
+    }
 
     if(access(FILEPATH, F_OK) == 0) {
         printf("!!!%s exist already!!!\n", FILEPATH);
@@ -24,8 +36,20 @@ void create_file(const char *FILEPATH) {
     }
 }
 
+// Check if the first character is valid.
+CharacterValidation check_first_char(const char *text) {
+    if(text[0] == '-' && strncmp(text, HELP_TEXT, HELP_MAX_STR) != 0) {
+        return INVALID_FCHARACTER;
+    }
 
-ArgumentLengthValidation control(char *filepath) {
+    if(!isalpha(text[0]) && (text[0] != '.' || text[0] != '_' || text[0] != '/')) {
+        return INVALID_FCHARACTER;
+    }
+
+    return VALID_FCHARACTER;
+}
+
+ArgumentLengthValidation control(const char *filepath) {
     int actual_len = strnlen(filepath, PATH_MAX);
     if(actual_len > PATH_MAX) {
         return INVALID_ARGUMENT_LENGTH;

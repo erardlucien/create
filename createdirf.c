@@ -8,6 +8,7 @@
 #include "create_file.h"
 
 enum CreateState {
+    INVALID_FIRST_CHARACTER = -7,
     COULD_NOT_CREATE = -6,
     NO_FILENAME_WAS_GIVEN = -5,
     NOT_VALID = -4,
@@ -76,6 +77,11 @@ CreateState create_directory_from(char *directory_path) {
         fprintf(stderr, "!!!the filepath is too big!!!\n");
         fprintf(stderr, "!!!The length of the path must be smaller than %d!!!\n", PATH_MAX);
         return PATH_TOO_LONG;
+    }
+
+    if(check_first_char(directory_path) == INVALID_FCHARACTER) {
+        fprintf(stderr, "!!!Invalid first character!!!\n");
+        return INVALID_FIRST_CHARACTER;
     }
 
     #ifdef __linux__
@@ -186,7 +192,9 @@ int main(int argc, char **argv) {
         fprintf(stderr, "!!!No FILEPATH was given!!!\n");
         printf("Write cdf -h to see, how use this command\n");
         return EXIT_FAILURE;
-    } if(argc == 2 && strncmp(argv[1], HELP_TEXT, HELP_MAX_STR) == 0) {
+    }
+
+    if(argc == 2 && strncmp(argv[1], HELP_TEXT, HELP_MAX_STR) == 0) {
         printf("Create more than one file and  the parent-directories.\n");
         printf("If the parents-directories are already created, then only the files will be created.\n");
         printf("Use it like this:\n");
@@ -196,7 +204,7 @@ int main(int argc, char **argv) {
         printf("cdf filepath1 filepath2 ...\n");
         printf("... stand for more filepath could be given.\n");
         return EXIT_SUCCESS; 
-    } 
+    }
 
     create_file_and_dir(argc, argv);
 

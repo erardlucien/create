@@ -9,11 +9,17 @@
 #define HELP_MAX_STR 3
 
 typedef enum {
+  VALID_FCHARACTER = 0,
+  INVALID_FCHARACTER = -1,
+} CharacterValidation;
+
+typedef enum {
   VALID_ARGUMENT_LENGTH = 0,
   INVALID_ARGUMENT_LENGTH = -1,
 } ArgumentLengthValidation;
 
 void create_file(const char *FILEPATH);
-ArgumentLengthValidation control(char *filepath);
+ArgumentLengthValidation control(const char *filepath);
+CharacterValidation check_first_char(const char *text);
 
 #endif
