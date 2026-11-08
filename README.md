@@ -32,7 +32,7 @@ The code was only tested in **Windows** and **Linux**. It is currently only guar
 
 - Open your terminal
 
-```cfmoremore filepath1 filepath2```
+```cfmore filepath1 filepath2```
 
 or
 
