@@ -34,37 +34,6 @@ int indexOfInRange(char character, char *text, int from, int to) {
     return -1;
 }
 
-int count(char character, char *text) {
-    int result = 0;
-    for(int i = 0; i < strlen(text); ++i) {
-        if(text[i] == character) {
-            ++result;
-        }
-    }
-
-    return result;
-}
-
-bool is_valid(char character, char *filepath) {
-
-    if(count('.', filepath) != 2 && filepath[0] == '.') {
-        return false;
-    }
-
-    for(int i = 0; i < strlen(filepath); ++i) {
-        if(
-            !isalnum(filepath[i])
-            && filepath[i] != character
-            && filepath[i] != '.'
-            && filepath[i] != '_'
-        ) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 bool existed_already(char *directory) {
     struct stat sb;
     return stat(directory, &sb) == 0 && S_ISDIR(sb.st_mode);
@@ -186,6 +155,38 @@ void create_file_and_dir(int argc, char **argv) {
     }
 }
 
+void create_file_and_same_dir(int argc, char **files, char *directory) {
+    CreateState result = CREATE_SUCCESS;
+    char directory_cpy[PATH_MAX + 1] = "";
+    strncpy(directory_cpy, directory, PATH_MAX);
+    char *ptr = NULL;
+
+    #ifdef __linux__
+       strncat(directory_cpy, "/", PATH_MAX);
+       result = create_directories_from(directory_cpy, '/');
+    #else
+       strncat(directory_cpy, "\\", PATH_MAX);
+       result = create_directories_from(directory_cpy, '\\');
+    #endif
+
+
+    for(int i = 3; i < argc; ++i) {
+        result = CREATE_SUCCESS;
+        char filepath[PATH_MAX + 1] = "";
+        strncpy(filepath, directory_cpy, PATH_MAX);
+        ptr  = strncat(filepath, files[i], PATH_MAX);
+
+        if(result == NO_FILENAME_WAS_GIVEN) {
+            fprintf(stderr, "!!!No filename was given!!!\n");
+        } else if(result != CREATE_SUCCESS && result != PATH_ALREADY_EXIST) {
+            fprintf(stderr, "!!!A failure has occurred!!!\n");
+        } else {
+            create_file(ptr);
+        }
+    }
+}
+
+
 int main(int argc, char **argv) {
 
     if(argc < 2) {
@@ -194,16 +195,39 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    if(argc == 2 && strncmp(argv[1], HELP_TEXT, HELP_MAX_STR) == 0) {
+    if(argc == 2 && strncmp(argv[1], HELP_TEXT, HELP_TEXT_LEN) == 0) {
         printf("Create more than one file and  the parent-directories.\n");
         printf("If the parents-directories are already created, then only the files will be created.\n");
         printf("Use it like this:\n");
         printf("cdf -h for help");
         printf("cdf filepath\n");
         printf("Or\n");
-        printf("cdf filepath1 filepath2 ...\n");
-        printf("... stand for more filepath could be given.\n");
+        printf("cdf filepath1 filepath2 ... filenameN\n");
+        printf("When you which to create more files in the same directory");
+        printf("cdf -sd  directory-path filename1 filename2 ... filenameN");
         return EXIT_SUCCESS; 
+    }
+
+    if(strncmp(argv[1], SAME_DIRECTORY, SAME_DIRECTORY_LEN) == 0) {
+         bool valid = false;
+         #ifdef __linux__
+              valid = is_valid('/', argv[1]);
+         #else
+              valid = is_valid('\\', argv[1]);
+         #endif
+        if(!valid) {
+             fprintf(stderr, "!!!The directory-path is not valid!!!\n");
+             printf("Write cdf -h to see, how use this command\n");
+             return EXIT_FAILURE;
+        }
+        create_file_and_same_dir(argc, argv, argv[2]);
+        return EXIT_SUCCESS;
+    }
+
+    if(argv[1][0] == '-') {
+        printf("!!!Invalid arguments!!!\n");
+        printf("Write cdf -h to see, how use this command\n");
+        return EXIT_FAILURE;
     }
 
     create_file_and_dir(argc, argv);

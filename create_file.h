@@ -4,9 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "iscreated.h"
+#include <stdbool.h>
 
 #define HELP_TEXT "-h"
-#define HELP_MAX_STR 3
+#define HELP_TEXT_LEN 3
+#define SAME_DIRECTORY "-sd"
+#define SAME_DIRECTORY_LEN 4
 
 typedef enum {
   VALID_FCHARACTER = 0,
@@ -19,6 +22,8 @@ typedef enum {
 } ArgumentLengthValidation;
 
 void create_file(const char *FILEPATH);
+bool is_valid(const char character, const char *filepath);
+int count(const char character, const char *text);
 ArgumentLengthValidation control(const char *filepath);
 CharacterValidation check_first_char(const char *text);
 
