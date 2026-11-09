@@ -45,8 +45,10 @@ int main(int argc, char **argv) {
         printf("cfmore -h for help");
         printf("cfmore filepath\n");
         printf("Or\n");
-        printf("cfmore filepath1 filepath2 ...\n");
-        printf("... stand for more filepath could be given.\n");
+        printf("cfmore filepath1 filepath2 ... filenameN\n");
+        printf("When you which to create more files in the same directory:\n");
+        printf("cfmore -sd  directory-path filename1 filename2 ... filenameN\n");
+        
         return EXIT_SUCCESS; 
     }
 
