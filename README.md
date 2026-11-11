@@ -1,7 +1,11 @@
 # create
   The project structure will be completely overwritten. The name of the programm cfmore will be change to cnf.
   The README.md will be also changed overall. All the previous files will be deleted from the repository.
-  It will take some time before the two programs will reusable. The will be two different source-code for windows and linux.
+  It will take some time before the two programs will reusable. The will be two different source-code for **windows** and **linux**.
+  I have decided to completely change everything in the project, because **windows** and **linux** work completely differently.
+  I find the structure of the file two difficult to maintain and it still some background-knowledge, i need to make the programs
+  more usable. Trying two write two programs, which suppose to work in two diffrent systems, i find it difficult to maintain, when
+  the code for **linux** and **windows** in the same files.
   I hope for Understanding.
 
 ## cfmore
