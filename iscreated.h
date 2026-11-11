@@ -3,12 +3,12 @@
 
 #ifdef _WIN32
 #include <io.h>
+#include <windows.h>
 #define F_OK 0
-#define PATH_MAX 255
 #define access _access
 #else
 #include <unistd.h>
-#define PATH_MAX 4095
+#include <limits.h>
 #endif
 
 #endif

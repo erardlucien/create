@@ -4,10 +4,14 @@
 #include <sys/types.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <ctype.h>
 #include "create_file.h"
 
 enum CreateState {
+    INVALID_ARGS = -10,
+    LESS_ARGS = -9,
+    NULL_POINTER_EXCEPTION = -8,
     INVALID_FIRST_CHARACTER = -7,
     COULD_NOT_CREATE = -6,
     NO_FILENAME_WAS_GIVEN = -5,
@@ -111,11 +115,14 @@ CreateState create_directories_from(char *filepath, char character) {
 
             if(directory == NULL) {
                 fprintf(stderr, "!!!Could not set the path!!!\n");
+                return NULL_POINTER_EXCEPTION;
             }
 
             directory[LENGTH - 1] = '\0';
             strncpy(directory, filepath, LENGTH - 1);
             result = create_directory_from(directory);
+            free(directory);
+            directory = NULL;
 
             if(result == COULD_NOT_CREATE) {
                 return result;
@@ -155,38 +162,6 @@ void create_file_and_dir(int argc, char **argv) {
     }
 }
 
-void create_file_and_same_dir(int argc, char **files, char *directory) {
-    CreateState result = CREATE_SUCCESS;
-    char directory_cpy[PATH_MAX + 1] = "";
-    strncpy(directory_cpy, directory, PATH_MAX);
-    char *ptr = NULL;
-
-    #ifdef __linux__
-       strncat(directory_cpy, "/", PATH_MAX);
-       result = create_directories_from(directory_cpy, '/');
-    #else
-       strncat(directory_cpy, "\\", PATH_MAX);
-       result = create_directories_from(directory_cpy, '\\');
-    #endif
-
-
-    for(int i = 3; i < argc; ++i) {
-        result = CREATE_SUCCESS;
-        char filepath[PATH_MAX + 1] = "";
-        strncpy(filepath, directory_cpy, PATH_MAX);
-        ptr  = strncat(filepath, files[i], PATH_MAX);
-
-        if(result == NO_FILENAME_WAS_GIVEN) {
-            fprintf(stderr, "!!!No filename was given!!!\n");
-        } else if(result != CREATE_SUCCESS && result != PATH_ALREADY_EXIST) {
-            fprintf(stderr, "!!!A failure has occurred!!!\n");
-        } else {
-            create_file(ptr);
-        }
-    }
-}
-
-
 int main(int argc, char **argv) {
 
     if(argc < 2) {
@@ -209,18 +184,7 @@ int main(int argc, char **argv) {
     }
 
     if(strncmp(argv[1], SAME_DIRECTORY, SAME_DIRECTORY_LEN) == 0) {
-         bool valid = false;
-         #ifdef __linux__
-              valid = is_valid('/', argv[1]);
-         #else
-              valid = is_valid('\\', argv[1]);
-         #endif
-        if(!valid) {
-             fprintf(stderr, "!!!The directory-path is not valid!!!\n");
-             printf("Write cdf -h to see, how use this command\n");
-             return EXIT_FAILURE;
-        }
-        create_file_and_same_dir(argc, argv, argv[2]);
+        printf("Sorry must reimplemented!!! This option is no longer avaible for now\n"); 
         return EXIT_SUCCESS;
     }
 

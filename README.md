@@ -1,5 +1,8 @@
 # create
-  Generate two programs, use as command-line-interface.
+  The project structure will be completely overwritten. The name of the programm cfmore will be change to cnf.
+  The README.md will be also changed overall. All the previous files will be deleted from the repository.
+  It will take some time before the two programs will reusable. The will be two different source-code for windows and linux.
+  I hope for Understanding.
 
 ## cfmore
 

@@ -9,28 +9,6 @@ void create_more_file(char **argv, int argc) {
     }
 }
 
-void create_more_file_same_dir(char **argv, int argc, char *directory) {
-    char directory_cpy[PATH_MAX + 1] = "";
-    strncpy(directory_cpy, directory, PATH_MAX);
-
-   
-    #ifdef __linux__
-       strncat(directory_cpy, "/", PATH_MAX);
-    #else
-       strncat(directory_cpy, "\\", PATH_MAX);
-    #endif
-
-
-
-    for(int i = 3; i < argc; ++i) {
-        char filepath[PATH_MAX + 1] = "";
-        strncpy(filepath, directory_cpy, PATH_MAX);
-        char *ptr = strncat(filepath, argv[i], PATH_MAX);
-        
-        create_file(filepath);
-    }
-}
-
 int main(int argc, char **argv) {
     if(argc < 2) {
         fprintf(stderr, "!!!No FILEPATH was given!!!\n");
@@ -54,18 +32,7 @@ int main(int argc, char **argv) {
 
    
     if(strncmp(argv[1], SAME_DIRECTORY, SAME_DIRECTORY_LEN) == 0) {
-         bool valid = false;
-         #ifdef __linux__
-              valid = is_valid('/', argv[1]);
-         #else
-              valid = is_valid('\\', argv[1]);
-         #endif
-        if(!valid) {
-             fprintf(stderr, "!!!The directory-path is not valid!!!\n");
-             printf("Write cdf -h to see, how use this command\n");
-             return EXIT_FAILURE;
-        }
-        create_more_file_same_dir(argv, argc, argv[2]);
+        printf("This option must be reimplemented. It was removed because of some failure in the implementation. For now is no longer avaible\n");
         return EXIT_SUCCESS;
     }
 
