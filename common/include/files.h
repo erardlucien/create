@@ -8,33 +8,33 @@
 // All possible value which could be return
 enum CreateState {
   // no failure has occurred
-  NO_ERROR = 0,
+  CREATE_OK = 0,
   // something weng wrong, but the error is no recognise
-  UNKNOWN_ERROR = -1,
+  CREATE_UNKNOWN_ERROR = -1,
   // the exist already
-  FILE_EXIST_ALR = -2,
+  CREATE_FILE_ALREADY_EXISTS = -2,
   // the directory exist already
-  DIR_EXIST_ALR = -3,
+  CREATE_DIR_ALREADY_EXISTS = -3,
   // filename is not valid
-  NO_VALID_FNAME = -4,
+  CREATE_INVALID_FILENAME = -4,
   // directory-name is not valid
-  NO_VALID_DIRNAME = -5,
+  CREATE_INVALID_DIRNAME = -5,
   // filepath is not valid
-  INVALID_FPATH = -6,
+  CREATE_INVALID_FILEPATH = -6,
   // directory-path is not valid
-  INVALID_DIRPATH = -7,
+  CREATE_INVALID_DIRPATH = -7,
   // extraction of filename fails
-  EXTC_FNANE_FAIL = -8,
-  // extraction of directory-path fails
-  EXTC_DIRNAME = -9,
+  CREATE_EXTRACT_FILENANE_FAILED = -8,
   // extraction of directory-name fails
-  EXTC_DIRPATH = -10,
+  CREATE_EXTRACT_DIRNAME_FAILED = -9,
+  // extraction of directory-path fails
+  CREATE_EXTRACT_DIRPATH_FAILED = -10,
   // extraction of each parent-directories-names fail
-  EXTC_DIRS = -11,
+  CREATE_EXTRACT_DIRNAMES_FAILED = -11,
   // has a separator-character as the last character before '\0'
-  NO_ENDSEP = -12,
+  CREATE_HASNO_ENDSEP = -12,
   // Creating dirpath with separator-character at the end fail
-  NDIRPATH_FAIL = -13,
+  CREATE_NEWDIRPATH_FAIL = -13,
 };
 
 #define END_STR '\0'
@@ -48,28 +48,32 @@ enum CreateState {
 typedef enum CreateState CreateState;
 // Create a file with the help of the 'filepath'
 // fpath_len is the length of the string filepath
-CreateState create(const char *filepath, const size_t *pfpath_len);
+CreateState create_file(const char *filepath, const size_t fpath_len);
 // extract the filename from 'filepath'
-CreateState extract(const char *filename, const char *filepath,
-                    const size_t *pfpath_len);
+CreateState extract_filename(const char *filename, const char *filepath,
+                             const size_t fpath_len);
 // create directory, if it does not exist.
-CreateState createdr(const char *dirpath, const size_t *pdirpath_len);
+CreateState create_directory(const char *dirpath, const size_t dirpath_len);
 // extract directory-name from 'dirpath'
-CreateState extractdr(const char *dirname, const char *dirpath,
-                      const size_t *pdirpath_len);
+CreateState extract_directory_name(const char *dirname, const char *dirpath,
+                                   const size_t dirname_capacity,
+                                   const size_t dirpath_len);
 // extract directory-path from 'filepath'
-CreateState extractdrf(const char *dirpath, const char *filepath,
-                       const size_t *pdirpath_len);
+CreateState extract_directory_path(const char *dirpath, const char *filepath,
+                                   const size_t dirpath_capacity,
+                                   const size_t filepath_len);
 // extract each parent-directories-names
-CreateState extractdrs(const char **dirname, const char *dirpath,
-                       const size_t *pdirpath_len);
+CreateState extract_parents_directories(const char **dirnames,
+                                        const char *dirpath,
+                                        const size_t dirnames_len,
+                                        const size_t dirpath_len);
 // control if directory-name is valid
-CreateState controld(const char *dirname, const size_t *pdirname_len);
+CreateState validate_dirname(const char *dirname, const size_t dirname_len);
 // control if filename is valid
-CreateState control(const char *filename, const size_t *pfilename_len);
+CreateState validate_filename(const char *filename, const size_t filename_len);
 // check if dirpath has separator-character as the last character before '\0'
-CreateState has_endstep(const char *dirpath, const size_t *pdirpath_len);
+CreateState has_endstep(const char *dirpath, const size_t dirpath_len);
 // cretae a new dirpath with separator-character based on the old dirpath
-CreateState generate(const char *newdir, const char *olddir,
-                     const size_t *pnew_len, const size_t *pold_len);
+CreateState generate_directory_path(const char *newdir, const char *olddir,
+                                    const size_t new_len, const size_t old_len);
 #endif
