@@ -32,8 +32,7 @@ The code was only tested in **Windows** and **Linux**. It is currently only guar
 3. Add the path to system-variable depending of your operating system.
 
 ## How to uninstall
-1. How to uninstall:
-```make uninstall```
+1. delete manually the bin directory
 2. Remove the path manually from the system-variable of your operating system.
 
 ## How to use it
