@@ -33,7 +33,7 @@ enum CreateState {
   // has a separator-character as the last character before '\0'
   CREATE_HASNO_ENDSEP = -12,
   // failed creation dirpath with separator-character at the end
-  CREATE_NEWDIRPATH_FAIL = -13,
+  CREATE_NEWDIRPATH_FAILED = -13,
   // Null-pointer exception
   CREATE_NULL_POINTER_EXCEPTION = -14,
 };
