@@ -1,14 +1,15 @@
 # create
-  The project structure will be completely overwritten. The name of the programm cfmore will be change to cnf.
-  The README.md will be also changed overall. All the previous files will be deleted from the repository.
-  It will take some time before the two programs will reusable. The will be two different source-code for **windows** and **linux**.
-  I have decided to completely change everything in the project, because **windows** and **linux** work completely differently.
-  I find the structure of the file two difficult to maintain and it still some background-knowledge, i need to make the programs
-  more usable. Trying two write two programs, which suppose to work in two diffrent systems, i find it difficult to maintain, when
-  the code for **linux** and **windows** in the same files.
-  I hope for Understanding.
 
-## cfmore
+This project should implement two programs cnf and cdf, which create more files at once.
+
+## Structure of the project
+
+The directory *common* is for what not specific for **linux** or **windows**, while the following directories *linux*
+is specific to **linux** and *windows* is specific **windows**. This project have now directories for tests, which
+are called *test*. The main.h are just there as placeholder.
+
+
+## cnf
 
 Create more file at once
 
@@ -23,7 +24,7 @@ Create the file/files and its directory, its parent-directories, if they don't a
 
 The code was only tested in **Windows** and **Linux**. It is currently only guaranteed to work on these two operating systems.
 
-## Setup
+## Installation
 
 1. Prerequisites `gcc` and `gnu make` must be installed
 2. How to install:
@@ -45,6 +46,10 @@ or
 
 ```cdf filepath1 filepath2```
 
-*Example of filepath:* `C:\User\dummy\text.txt (for Windows)` or `\home\dummy\Documents\text.txt (for Linux)`
+*Example:*
+- `cnf C:\User\dummy\text.txt C:\User\dummy\Documents\logdir\logfile.log (for Windows)`
+- `cnf \home\dummy\Documents\text.txt cnf \home\dummy\Downloads\hobbys\music.txt (for Linux)`
 
+- `cdf C:\User\dummy\newdir1\text.txt C:\User\dummy\Documents\newlogdir1\logfile.log (for Windows)`
+- `cdf \home\dummy\Documents\User\dummy\newdir1\text\text.txt cnf \home\dummy\Downloads\newhobbys\music.txt (for Linux)`
 
