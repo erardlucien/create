@@ -48,8 +48,8 @@ or
 
 *Example:*
 - `cnf C:\User\dummy\text.txt C:\User\dummy\Documents\logdir\logfile.log (for Windows)`
-- `cnf \home\dummy\Documents\text.txt cnf \home\dummy\Downloads\hobbys\music.txt (for Linux)`
+- `cnf \home\dummy\Documents\text.txt \home\dummy\Downloads\hobbys\music.txt (for Linux)`
 
 - `cdf C:\User\dummy\newdir1\text.txt C:\User\dummy\Documents\newlogdir1\logfile.log (for Windows)`
-- `cdf \home\dummy\Documents\User\dummy\newdir1\text\text.txt cnf \home\dummy\Downloads\newhobbys\music.txt (for Linux)`
+- `cdf \home\dummy\Documents\User\dummy\newdir1\text\text.txt \home\dummy\Downloads\newhobbys\music.txt (for Linux)`
 
