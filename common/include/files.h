@@ -1,5 +1,6 @@
 #ifndef _FILE_H_LER_
 #define _FILE_H_LER_
+#include <cstddef>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,8 +42,10 @@ enum CreateState {
 #define END_STR '\0'
 // special character, which are allowed
 extern const char ALLOWED_SPECIAL_CHARACTER[];
+extern const size_t ALLOWED_SPECIAL_CHARACTER_LEN;
 // {':', '.', '/', '\\', ' ', '-'};
 extern const char *ALLOWED_TYPE_FILE[];
+extern const size_t ALLOWED_TYPE_FILE_LEN;
 //{
 //  ".c",  ".html", ".cpp", ".h",   ".rs",  ".txt", ".md",  ".css",
 //  ".py", ".js",   ".hpp", ".csv", ".tex", ".xml", ".json"};
