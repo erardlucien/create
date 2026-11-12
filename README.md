@@ -5,8 +5,8 @@ This project should implement two programs cnf and cdf, which create more files 
 ## Structure of the project
 
 The directory *common* is for what not specific for **linux** or **windows**, while the following directories *linux*
-is specific to **linux** and *windows* is specific **windows**. This project have now directories for tests, which
-are called *test*. The main.h are just there as placeholder.
+is specific to **linux** and *windows* is specific **windows**. This project have now directory for tests, which
+are called *tests*. The main.h are just there as placeholder.
 
 
 ## cnf
