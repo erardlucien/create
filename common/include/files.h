@@ -39,10 +39,6 @@ enum CreateState {
 #define END_STR '\0'
 // special character, which are allowed
 #define ALLOWED_SCHAR {':', '.', '/', '\\', ' ', '-'}
-// separator-character for windows
-#define WIN_SEP "\\"
-// separator-character for linux
-#define LIN_SEP "/"
 
 typedef enum CreateState CreateState;
 // Create a file with the help of the 'filepath'
