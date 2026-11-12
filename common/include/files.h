@@ -34,6 +34,8 @@ enum CreateState {
   CREATE_HASNO_ENDSEP = -12,
   // failed creation dirpath with separator-character at the end
   CREATE_NEWDIRPATH_FAIL = -13,
+  // Null-pointer exception
+  CREATE_NULL_POINTER_EXCEPTION = -14,
 };
 
 #define END_STR '\0'
