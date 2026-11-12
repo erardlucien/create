@@ -40,10 +40,10 @@ enum CreateState {
 
 #define END_STR '\0'
 // special character, which are allowed
-#define ALLOWED_SCHAR {':', '.', '/', '\\', ' ', '-'}
-#define ALLOWED_TYPE_FILE                                                      \
-  {".c",   ".html", ".cpp", ".h",  ".rs",  ".txt", ".md",                      \
-   ".css", "",      ".py",  ".js", ".hpp", ".csv", ".tex"}
+static const char ALLOWED_SPECIAL_CHARACTER[] = {':', '.', '/', '\\', ' ', '-'};
+static const char *ALLOWED_TYPE_FILE[] = {
+    ".c",  ".html", ".cpp", ".h",   ".rs",  ".txt", ".md",  ".css",
+    ".py", ".js",   ".hpp", ".csv", ".tex", ".xml", ".json"};
 
 typedef enum CreateState CreateState;
 // Create a file with the help of the 'filepath'
