@@ -42,10 +42,6 @@ enum CreateState {
 
 #define END_STR '\0'
 #define MAKEFILE "Makefile"
-// special character, which are allowed
-extern const char ALLOWED_SPECIAL_CHARACTER[];
-extern const size_t ALLOWED_SPECIAL_CHARACTER_LEN;
-// {':', '.', '/', '\\', ' ', '-'};
 extern const char *ALLOWED_TYPE_FILE[];
 extern const size_t ALLOWED_TYPE_FILE_LEN;
 //{
