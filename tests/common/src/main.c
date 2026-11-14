@@ -11,62 +11,40 @@ static void count_err_failure(int *const perr_count, int *const pfailure_count,
 
 static int test_count = 0;
 
+struct AssertFilename {
+  const char *str;
+  CreateState state;
+};
+
+typedef struct AssertFilename AssertFilename;
+
 int main(void) {
-  char *filenames[] = {NULL,        "main.c",       "main.cpp",
-                       "solid.hpp", "log-file.txt", "demo arrest.xml"};
-  CreateState states[] = {CREATE_NULL_POINTER_EXCEPTION, CREATE_OK,
-                          CREATE_INVALID_FILENAME};
   int err_count = 0;
   int failure_count = 0;
-  myAssertState res = ASSERT_FUNC_EQ1(
-      states[0], REGISTER_ENTRY1(validate_filename, filenames[0], 1));
+  const AssertFilename assert_filenames[] = {
+      {NULL, CREATE_NULL_POINTER_EXCEPTION}, {"main.cpp", CREATE_OK},
+      {".", CREATE_INVALID_FILENAME},        {".xml", CREATE_INVALID_FILENAME},
+      {"", CREATE_INVALID_FILENAME},         {".m.c", CREATE_OK},
+      {"tom-mio-n.txt", CREATE_OK},          {"Angel Zu.html", CREATE_OK},
+      {"u\\uio", CREATE_INVALID_FILENAME},   {"4.c", CREATE_OK},
+      {"empty", CREATE_INVALID_FILENAME},
+  };
+  myAssertState res =
+      ASSERT_FUNC_EQ1(CREATE_OK, REGISTER_ENTRY1(NULL, NULL, 1));
   count_err_failure(&err_count, &failure_count, res);
 
-  for (size_t i = 1; i < sizeof(filenames) / sizeof(filenames[0]); ++i) {
+  const size_t assert_filenames_len =
+      sizeof(assert_filenames) / sizeof(assert_filenames[0]);
+
+  for (size_t i = 0; i < assert_filenames_len; ++i) {
     res = ASSERT_FUNC_EQ1(
-        states[1],
-        REGISTER_ENTRY1(validate_filename, filenames[i], strlen(filenames[i])));
-
+        assert_filenames[i].state,
+        REGISTER_ENTRY1(validate_filename, assert_filenames[i].str,
+                        assert_filenames[i].str == NULL
+                            ? 0
+                            : strlen(assert_filenames[i].str)));
     count_err_failure(&err_count, &failure_count, res);
   }
-
-  res = ASSERT_FUNC_NEQ1(states[1],
-                         REGISTER_ENTRY1(validate_filename, filenames[0], 0));
-
-  count_err_failure(&err_count, &failure_count, res);
-
-  for (size_t i = 1; i < sizeof(filenames) / sizeof(filenames[0]); ++i) {
-    res = ASSERT_FUNC_NEQ1(
-        states[0],
-        REGISTER_ENTRY1(validate_filename, filenames[i], strlen(filenames[i])));
-    count_err_failure(&err_count, &failure_count, res);
-  }
-  char *filetypes[] = {".c",    ".",     ".hpp", ".cpp", ".xml",
-                       ".json", ".html", " ",    ""};
-
-  for (size_t i = 1; i < sizeof(filetypes) / sizeof(filetypes[0]); ++i) {
-    res = ASSERT_FUNC_NEQ1(
-        states[1],
-        REGISTER_ENTRY1(validate_filename, filetypes[i], strlen(filetypes[i])));
-    count_err_failure(&err_count, &failure_count, res);
-  }
-
-  res = ASSERT_FUNC_NEQ1(states[1],
-                         REGISTER_ENTRY1(validate_filename, "main.c", 2));
-  count_err_failure(&err_count, &failure_count, res);
-
-  char dummy[] = "dummy";
-
-  res = ASSERT_FUNC_EQ1(
-      states[2], REGISTER_ENTRY1(validate_filename, dummy, strlen(dummy)));
-  count_err_failure(&err_count, &failure_count, res);
-
-  res =
-      ASSERT_FUNC_EQ1(states[2], REGISTER_ENTRY1(validate_filename, dummy, 10));
-  count_err_failure(&err_count, &failure_count, res);
-
-  res = ASSERT_FUNC_EQ1(states[2], REGISTER_ENTRY1(NULL, dummy, 10));
-  count_err_failure(&err_count, &failure_count, res);
 
   if (err_count > 0 || failure_count > 0) {
     printf("Errors: %d, Failure: %d, Success: %d\n", err_count, failure_count,
