@@ -22,7 +22,7 @@ static const char ALLOWED_CHARACTERS[] = {
 static size_t ALLOWED_CHARACTER_LEN =
     sizeof(ALLOWED_CHARACTERS) / sizeof(ALLOWED_CHARACTERS[0]);
 
-static bool is_character_valid(char c);
+static bool is_character_valid(unsigned char c);
 static bool is_valid_type(const char *filename, size_t filename_len);
 
 CreateState validate_filename(const char *filename, size_t filename_len) {
@@ -35,7 +35,7 @@ CreateState validate_filename(const char *filename, size_t filename_len) {
   }
 
   for (size_t i = 0; i < filename_len; ++i) {
-    if (!is_character_valid(filename[i])) {
+    if (!is_character_valid((unsigned char)filename[i])) {
       return CREATE_INVALID_FILENAME;
     }
   }
@@ -44,7 +44,7 @@ CreateState validate_filename(const char *filename, size_t filename_len) {
                                                : CREATE_INVALID_FILENAME;
 }
 
-static bool is_character_valid(char c) {
+static bool is_character_valid(unsigned char c) {
   if (isalnum(c)) {
     return true;
   }
@@ -69,8 +69,10 @@ static bool is_valid_type(const char *filename, size_t filename_len) {
 
   for (size_t i = 0; i < ALLOWED_TYPE_FILE_LEN; ++i) {
     size_t len = strlen(ALLOWED_TYPE_FILE[i]);
-    const char *top = filename + (filename_len - len);
-    if (filename_len > len && strncmp(top, ALLOWED_TYPE_FILE[i], len) == 0) {
+    const char *ptr = (filename_len - len <= 0 || filename_len < len)
+                          ? NULL
+                          : filename + (filename_len - len);
+    if (ptr != NULL && strncmp(ptr, ALLOWED_TYPE_FILE[i], len) == 0) {
       return true;
     }
   }
