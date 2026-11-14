@@ -69,8 +69,8 @@ static bool is_valid_type(const char *filename, size_t filename_len) {
 
   for (size_t i = 0; i < ALLOWED_TYPE_FILE_LEN; ++i) {
     size_t len = strlen(ALLOWED_TYPE_FILE[i]);
-    const char *top = filename + (strlen(filename) - len);
-    if (strncmp(top, ALLOWED_TYPE_FILE[i], len) == 0) {
+    const char *top = filename + (filename_len - len);
+    if (filename_len > len && strncmp(top, ALLOWED_TYPE_FILE[i], len) == 0) {
       return true;
     }
   }
