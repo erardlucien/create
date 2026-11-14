@@ -3,41 +3,41 @@
 // header-project
 #include "../../common/include/my_assert.h"
 
-bool my_assert_eq(CreateState expected, CreateState actual,
-                  const char *expression, int line) {
-  if (expression == NULL) {
-    fprintf(stderr, "[ERROR] Null-expression at line %d", line);
+bool my_assert_eq1(CreateState expected, FuncEntry1 entry, int line) {
+  if (entry.fn == NULL) {
+    fprintf(stderr, "[ERROR] Null-pointer at line %d", line);
     return false;
   }
 
+  CreateState actual = entry.fn(entry.str, entry.str_len);
   bool condition = expected == actual;
 
   if (!condition) {
     fprintf(stderr,
-            "[FAILED] %s for the expression %s at line %d, expected: %d is not "
-            "equal to "
+            "[FAILED] %s for  actual = %s(%s, %zu) at line %d, expected: %d, "
             "actual: %d",
-            __func__, expression, line, expected, actual);
+            __func__, entry.fn_name, entry.str, entry.str_len, line, expected,
+            actual);
   }
 
   return condition;
 }
 
-bool my_assert_neq(CreateState expected, CreateState actual,
-                   const char *expression, int line) {
-  if (expression == NULL) {
-    fprintf(stderr, "[ERROR] Null-expression at line %d", line);
+bool my_assert_neq1(CreateState expected, FuncEntry1 entry, int line) {
+  if (entry.fn == NULL) {
+    fprintf(stderr, "[ERROR] Null-pointer at line %d", line);
     return false;
   }
 
+  CreateState actual = entry.fn(entry.str, entry.str_len);
   bool condition = expected != actual;
 
   if (!condition) {
     fprintf(stderr,
-            "[FAILED] %s for the expression %s at line %d, expected: %d is "
-            "equal to "
+            "[FAILED] %s for  actual = %s(%s, %zu) at line %d, expected: %d == "
             "actual: %d",
-            __func__, expression, line, expected, actual);
+            __func__, entry.fn_name, entry.str, entry.str_len, line, expected,
+            actual);
   }
 
   return condition;

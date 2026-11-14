@@ -6,14 +6,29 @@
 // header-project
 #include "../../../common/include/files.h"
 
-#define ASSERT_FUNC_EQ(expected, actual)                                       \
-  my_assert_eq((expected), (actual), #actual, __LINE__)
+typedef CreateState (*fptr1)(const char *, size_t);
 
-#define ASSERT_FUNC_NEQ(expected, actual)                                      \
-  my_assert_neq((expected), (actual), #actual, __LINE__)
+struct FuncEntry1 {
+  fptr1 fn;
+  const char *fn_name;
+  const char *str;
+  size_t str_len;
+};
 
-bool my_assert_eq(CreateState expected, CreateState actual,
-                  const char *expression, int line);
-bool my_assert_neq(CreateState expected, CreateState actual,
-                   const char *expression, int line);
+typedef struct FuncEntry1 FuncEntry1;
+
+#define REGISTER_ENTRY1(fn, str, str_len)                                      \
+  (FuncEntry1) {                                                               \
+    (fptr1)(fn), (const char *)((fn) == NULL ? "NULL" : (#fn)),                \
+        (const char *)(str), (size_t)(str_len)                                 \
+  }
+
+#define ASSERT_FUNC_EQ1(expected, entry)                                       \
+  my_assert_eq1((expected), (entry), __LINE__)
+
+#define ASSERT_FUNC_NEQ1(expected, entry)                                      \
+  my_assert_neq1((expected), (entry), __LINE__)
+
+bool my_assert_eq1(CreateState expected, FuncEntry1 entry, int line);
+bool my_assert_neq1(CreateState expected, FuncEntry1 entry, int line);
 #endif
