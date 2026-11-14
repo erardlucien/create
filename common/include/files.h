@@ -42,11 +42,6 @@ enum CreateState {
 
 #define END_STR '\0'
 #define MAKEFILE "Makefile"
-extern const char *ALLOWED_TYPE_FILE[];
-extern const size_t ALLOWED_TYPE_FILE_LEN;
-//{
-//  ".c",  ".html", ".cpp", ".h",   ".rs",  ".txt", ".md",  ".css",
-//  ".py", ".js",   ".hpp", ".csv", ".tex", ".xml", ".json", ".mk"};
 
 typedef enum CreateState CreateState;
 // Create a file with the help of the 'filepath'
