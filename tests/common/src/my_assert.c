@@ -3,10 +3,10 @@
 // header-project
 #include "../../common/include/my_assert.h"
 
-bool my_assert_eq1(CreateState expected, FuncEntry1 entry, int line) {
+myAssertState my_assert_eq1(CreateState expected, FuncEntry1 entry, int line) {
   if (entry.fn == NULL) {
-    fprintf(stderr, "[ERROR] Null-pointer at line %d", line);
-    return false;
+    fprintf(stderr, "[ERROR] Null-pointer at line %d\n", line);
+    return MY_ASSERT_ERROR;
   }
 
   CreateState actual = entry.fn(entry.str, entry.str_len);
@@ -15,18 +15,19 @@ bool my_assert_eq1(CreateState expected, FuncEntry1 entry, int line) {
   if (!condition) {
     fprintf(stderr,
             "[FAILED] %s for  actual = %s(%s, %zu) at line %d, expected: %d, "
-            "actual: %d",
+            "actual: %d\n",
             __func__, entry.fn_name, entry.str, entry.str_len, line, expected,
             actual);
+    return MY_ASSERT_FAILURE;
   }
 
-  return condition;
+  return MY_ASSERT_OK;
 }
 
-bool my_assert_neq1(CreateState expected, FuncEntry1 entry, int line) {
+myAssertState my_assert_neq1(CreateState expected, FuncEntry1 entry, int line) {
   if (entry.fn == NULL) {
-    fprintf(stderr, "[ERROR] Null-pointer at line %d", line);
-    return false;
+    fprintf(stderr, "[ERROR] Null-pointer at line %d\n", line);
+    return MY_ASSERT_ERROR;
   }
 
   CreateState actual = entry.fn(entry.str, entry.str_len);
@@ -35,10 +36,11 @@ bool my_assert_neq1(CreateState expected, FuncEntry1 entry, int line) {
   if (!condition) {
     fprintf(stderr,
             "[FAILED] %s for  actual = %s(%s, %zu) at line %d, expected: %d == "
-            "actual: %d",
+            "actual: %d\n",
             __func__, entry.fn_name, entry.str, entry.str_len, line, expected,
             actual);
+    return MY_ASSERT_FAILURE;
   }
 
-  return condition;
+  return MY_ASSERT_OK;
 }

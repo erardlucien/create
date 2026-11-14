@@ -17,6 +17,14 @@ struct FuncEntry1 {
 
 typedef struct FuncEntry1 FuncEntry1;
 
+enum myAssertState {
+  MY_ASSERT_OK = 1,
+  MY_ASSERT_FAILURE = 2,
+  MY_ASSERT_ERROR = 3,
+};
+
+typedef enum myAssertState myAssertState;
+
 #define REGISTER_ENTRY1(fn, str, str_len)                                      \
   (FuncEntry1) {                                                               \
     (fptr1)(fn), (const char *)((fn) == NULL ? "NULL" : (#fn)),                \
@@ -29,6 +37,6 @@ typedef struct FuncEntry1 FuncEntry1;
 #define ASSERT_FUNC_NEQ1(expected, entry)                                      \
   my_assert_neq1((expected), (entry), __LINE__)
 
-bool my_assert_eq1(CreateState expected, FuncEntry1 entry, int line);
-bool my_assert_neq1(CreateState expected, FuncEntry1 entry, int line);
+myAssertState my_assert_eq1(CreateState expected, FuncEntry1 entry, int line);
+myAssertState my_assert_neq1(CreateState expected, FuncEntry1 entry, int line);
 #endif
