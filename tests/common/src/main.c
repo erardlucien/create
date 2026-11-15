@@ -1,6 +1,7 @@
 // standart library
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 // header project
 #include "../../../common/include/files.h"
@@ -58,12 +59,12 @@ int main(void) {
     printf("Errors: %d, Failure: %d, Success: %d\n", counter.err_count,
            counter.failure_count,
            (counter.test_count - (counter.err_count + counter.failure_count)));
-    return -1;
+    return EXIT_FAILURE;
   } else {
     printf("All Tests are passed!\n");
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 static void count_err_failure(AssertCounter *const counter, myAssertState res) {
