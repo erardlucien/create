@@ -7,6 +7,9 @@
 // custom-libary
 #include "../include/files.h"
 
+#define POINT '.'
+#define POINT_MAX 1
+
 static const char *ALLOWED_TYPE_FILE[] = {
     ".c",  ".html", ".cpp", ".h",   ".rs",  ".txt", ".md",   ".css",
     ".py", ".js",   ".hpp", ".csv", ".tex", ".xml", ".json", ".mk"};
@@ -15,10 +18,10 @@ static const size_t ALLOWED_TYPE_FILE_LEN =
 
 static const char ALLOWED_CHARACTERS[] = {
     ' ',
-    '.',
     '-',
     '_',
 };
+
 static size_t ALLOWED_CHARACTER_LEN =
     sizeof(ALLOWED_CHARACTERS) / sizeof(ALLOWED_CHARACTERS[0]);
 
@@ -36,12 +39,13 @@ CreateState validate_filename(const char *filename, size_t filename_len) {
   }
 
   for (size_t i = 0; i < filename_len; ++i) {
-    if (!is_character_valid((unsigned char)filename[i])) {
+    if (filename[i] != POINT &&
+        !is_character_valid((unsigned char)filename[i])) {
       return CREATE_INVALID_FILENAME;
     }
   }
 
-  if (count(ALLOWED_CHARACTERS[1], filename, filename_len) > 1) {
+  if (count(POINT, filename, filename_len) > POINT_MAX) {
     return CREATE_INVALID_FILENAME;
   }
 
@@ -74,9 +78,8 @@ static bool is_valid_type(const char *filename, size_t filename_len) {
 
   for (size_t i = 0; i < ALLOWED_TYPE_FILE_LEN; ++i) {
     size_t len = strlen(ALLOWED_TYPE_FILE[i]);
-    const char *ptr = (filename_len - len <= 0 || filename_len < len)
-                          ? NULL
-                          : filename + (filename_len - len);
+    const char *ptr =
+        (filename_len <= len) ? NULL : filename + (filename_len - len);
     if (ptr != NULL && strncmp(ptr, ALLOWED_TYPE_FILE[i], len) == 0) {
       return true;
     }
