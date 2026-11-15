@@ -22,15 +22,21 @@ int main(void) {
   int err_count = 0;
   int failure_count = 0;
   const AssertFilename assert_filenames[] = {
-      {NULL, CREATE_NULL_POINTER_EXCEPTION}, {"main.cpp", CREATE_OK},
-      {".", CREATE_INVALID_FILENAME},        {".xml", CREATE_INVALID_FILENAME},
-      {"", CREATE_INVALID_FILENAME},         {".m.c", CREATE_OK},
-      {"tom-mio-n.txt", CREATE_OK},          {"Angel Zu.html", CREATE_OK},
-      {"u\\uio", CREATE_INVALID_FILENAME},   {"4.c", CREATE_OK},
+      {NULL, CREATE_NULL_POINTER_EXCEPTION},
+      {"main.cpp", CREATE_OK},
+      {".", CREATE_INVALID_FILENAME},
+      {".xml", CREATE_INVALID_FILENAME},
+      {"", CREATE_INVALID_FILENAME},
+      {".m.c", CREATE_INVALID_FILENAME},
+      {"tom-mio-n.txt", CREATE_OK},
+      {"Angel Zu.html", CREATE_OK},
+      {"u\\uio", CREATE_INVALID_FILENAME},
+      {"4.c", CREATE_OK},
       {"empty", CREATE_INVALID_FILENAME},
-  };
-  myAssertState res =
-      ASSERT_FUNC_EQ1(CREATE_OK, REGISTER_ENTRY1(NULL, NULL, 1));
+      {"a. b.c", CREATE_INVALID_FILENAME},
+      {"a.", CREATE_INVALID_FILENAME}};
+  myAssertState res = ASSERT_FUNC_EQ1(CREATE_NULL_POINTER_EXCEPTION,
+                                      REGISTER_ENTRY1(NULL, NULL, 1));
   count_err_failure(&err_count, &failure_count, res);
 
   const size_t assert_filenames_len =

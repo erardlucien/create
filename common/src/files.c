@@ -24,6 +24,7 @@ static size_t ALLOWED_CHARACTER_LEN =
 
 static bool is_character_valid(unsigned char c);
 static bool is_valid_type(const char *filename, size_t filename_len);
+static int count(char character, const char *str, size_t str_len);
 
 CreateState validate_filename(const char *filename, size_t filename_len) {
   if (filename == NULL) {
@@ -38,6 +39,10 @@ CreateState validate_filename(const char *filename, size_t filename_len) {
     if (!is_character_valid((unsigned char)filename[i])) {
       return CREATE_INVALID_FILENAME;
     }
+  }
+
+  if (count(ALLOWED_CHARACTERS[1], filename, filename_len) > 1) {
+    return CREATE_INVALID_FILENAME;
   }
 
   return is_valid_type(filename, filename_len) ? CREATE_OK
@@ -77,4 +82,14 @@ static bool is_valid_type(const char *filename, size_t filename_len) {
     }
   }
   return false;
+}
+
+static int count(char character, const char *str, size_t str_len) {
+  int count = 0;
+  for (size_t i = 0; i < str_len; ++i) {
+    if (character == str[i]) {
+      ++count;
+    }
+  }
+  return count;
 }

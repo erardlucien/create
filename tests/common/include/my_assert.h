@@ -34,9 +34,5 @@ typedef enum myAssertState myAssertState;
 #define ASSERT_FUNC_EQ1(expected, entry)                                       \
   my_assert_eq1((expected), (entry), __LINE__)
 
-#define ASSERT_FUNC_NEQ1(expected, entry)                                      \
-  my_assert_neq1((expected), (entry), __LINE__)
-
 myAssertState my_assert_eq1(CreateState expected, FuncEntry1 entry, int line);
-myAssertState my_assert_neq1(CreateState expected, FuncEntry1 entry, int line);
 #endif
