@@ -74,7 +74,7 @@ static void count_err_failure(AssertCounter *const counter, myAssertState res) {
     ++counter->err_count;
     break;
   case MY_ASSERT_FAILURE:
-    ++counter->err_count;
+    ++counter->failure_count;
     break;
   default:
     break;
