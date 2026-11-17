@@ -26,22 +26,22 @@ enum CreateState {
   CREATE_INVALID_DIRPATH = -7,
   // failed extraction of filename
   CREATE_EXTRACT_FILENANE_FAILED = -8,
-  // failed extraction of directory-name
-  CREATE_EXTRACT_DIRNAME_FAILED = -9,
   // failed extraction of directory-path
-  CREATE_EXTRACT_DIRPATH_FAILED = -10,
-  // failed extraction of each parent-directories-names
-  CREATE_EXTRACT_DIRNAMES_FAILED = -11,
+  CREATE_EXTRACT_DIRPATH_FAILED = -9,
   // has a separator-character as the last character before '\0'
-  CREATE_HASNO_ENDSEP = -12,
+  CREATE_HASNO_ENDSEP = -10,
   // failed creation dirpath with separator-character at the end
-  CREATE_NEWDIRPATH_FAILED = -13,
+  CREATE_NEWDIRPATH_FAILED = -11,
   // Null-pointer exception
-  CREATE_NULL_POINTER_EXCEPTION = -14,
+  CREATE_NULL_POINTER_EXCEPTION = -12,
   // no directory-path
-  CREATE_NO_DIRPATH = -15,
+  CREATE_NO_DIRPATH = -13,
   // directory-path does not exist
-  CREATE_DIRPATH_DONT_EXIST = -16,
+  CREATE_DIRPATH_DONT_EXIST = -14,
+  // unknow option
+  CREATE_INVALID_OPTION = -15,
+  // invalid argument for creating more files in different dirpaths
+  CREATE_INVALID_ARGUMENT = -16
 };
 
 #define END_STR '\0'

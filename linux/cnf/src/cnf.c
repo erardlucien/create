@@ -14,6 +14,7 @@
 #include <unistd.h>
 // header-project
 #include "../../../common/include/files.h"
+#include "../include/cnf.h"
 
 #define SEP_STR "/"
 #define SEP_CHAR '/'
@@ -22,8 +23,13 @@
 #define STR_POINT "."
 #define HYPHEN '-'
 #define UNDERSCORE '_'
+#define FILE_DELIMITATOR ':'
 
 static bool is_dir_exist(const char *dirpath);
+static int count_args(int *count, char *argument, size_t argument_len);
+static bool is_arg_valid(const char *argument, size_t argument_len);
+static bool extract_list(int list_len, char (**list)[list_len], char *argument,
+                         size_t argument_len);
 
 CreateState extract_filename(char **filename, char *filepath,
                              size_t fpath_len) {
@@ -171,7 +177,7 @@ CreateState create_file(const char *filepath, size_t fpath_len) {
     return CREATE_DIRPATH_DONT_EXIST;
   }
 
-  mode_t mode = 0755;
+  mode_t mode = 0644;
 
   int fd = open(filepath, O_RDONLY | O_CREAT, mode);
   close(fd);
@@ -191,10 +197,198 @@ CreateState create_file(const char *filepath, size_t fpath_len) {
   return CREATE_OK;
 }
 
-bool is_dir_exist(const char *dirpath) {
+CreateState choose_option(const char *option, const char **argv, int argc) {
+  AvaibleOption avaible_options[] = {{"--df", DIFFERENT_FILEPATH},
+                                     {"--sd", SAME_DIR},
+                                     {"--dd", DIFFERENT_DIRS}};
+
+  const size_t avaible_options_len =
+      sizeof(avaible_options) / sizeof(avaible_options[0]);
+
+  OptionIndex option_index = INVALID_OPTION;
+
+  for (size_t i = 0; i < avaible_options_len; ++i) {
+    if (strlen(option) == strlen(avaible_options[i].option) &&
+        strcmp(avaible_options[i].option, option) == 0) {
+      option_index = avaible_options[i].option_index;
+    }
+  }
+
+  switch (option_index) {
+  case DIFFERENT_FILEPATH:
+    return create_different_filepath(argv, argc);
+  case SAME_DIR:
+    return create_in_same_dir(argv[1], argv + 2, argc);
+  case DIFFERENT_DIRS:
+    return create_different_dir(argv, argc);
+  default:
+    return CREATE_INVALID_OPTION;
+  }
+}
+
+CreateState create_files_in_different_dir(const char **argv, int argc) {
+  CreateState state = CREATE_OK;
+  char **copy_argv = (char **)malloc(sizeof(char *) * argc);
+  if (copy_argv == NULL) {
+    return CREATE_UNKNOWN_ERROR;
+  }
+
+  for (size_t i = 0; i < argc; ++i) {
+    size_t arg_len = strlen(argv[i]);
+    copy_argv[i] = (char *)malloc(sizeof(char) * arg_len);
+    if (copy_argv[i] == NULL) {
+      for (size_t j = 0; j < i; ++j) {
+        free(copy_argv[j]);
+        copy_argv[j] = NULL;
+      }
+      free(copy_argv);
+      copy_argv = NULL;
+      return CREATE_UNKNOWN_ERROR;
+    }
+    snprintf(copy_argv[i], (arg_len + 1), "%s", argv[i]);
+    int list_len = 0;
+    if (count_args(&list_len, copy_argv[i], arg_len) == -1) {
+      for (size_t j = 0; j < i; ++j) {
+        free(copy_argv[j]);
+        copy_argv[j] = NULL;
+      }
+      free(copy_argv);
+      copy_argv = NULL;
+      return CREATE_UNKNOWN_ERROR;
+    }
+
+    char (*list)[list_len];
+    if (!extract_list(list_len, &list, copy_argv[i], arg_len)) {
+      for (size_t j = 0; j < i; ++j) {
+        free(copy_argv[j]);
+        copy_argv[j] = NULL;
+      }
+      free(copy_argv);
+      copy_argv = NULL;
+      return CREATE_INVALID_ARGUMENT;
+    }
+
+    const char *plist = *(list + 1);
+
+    state = create_in_same_dir(list[0], &plist, (list_len - 1));
+    if (state != CREATE_OK) {
+      for (size_t j = 0; j < i; ++j) {
+        free(copy_argv[j]);
+        copy_argv[j] = NULL;
+      }
+      free(copy_argv);
+      copy_argv = NULL;
+      return state;
+    }
+  }
+  for (size_t j = 0; j < argc; ++j) {
+    free(copy_argv[j]);
+    copy_argv[j] = NULL;
+  }
+  free(copy_argv);
+  copy_argv = NULL;
+
+  return state;
+}
+
+CreateState create_different_filepath(const char **argv, int argc) {
+  CreateState state = CREATE_OK;
+  for (int i = 0; i < argc; ++i) {
+    state = create_file(argv[i], strlen(argv[i]));
+    if (state != CREATE_OK) {
+      return state;
+    }
+  }
+
+  return state;
+}
+
+CreateState create_in_same_dir(const char *dirpath, const char **argv,
+                               int argc) {
+
+  if (!is_dir_exist(dirpath)) {
+    return CREATE_INVALID_DIRPATH;
+  }
+
+  const int fail_to_print = -1;
+  CreateState state = CREATE_OK;
+
+  for (int i = 0; i < argc; ++i) {
+    size_t fpath_len = strlen(argv[0]) + strlen(argv[i]);
+    char *filepath = (char *)malloc(sizeof(dirpath[0]) * (fpath_len + 1));
+    if (filepath == NULL) {
+      return CREATE_UNKNOWN_ERROR;
+    }
+
+    if (snprintf(filepath, (fpath_len + 1), "%s%s", dirpath, argv[i]) ==
+        fail_to_print) {
+      free(filepath);
+      filepath = NULL;
+      return CREATE_UNKNOWN_ERROR;
+    }
+
+    state = create_file(filepath, fpath_len);
+
+    if (state != CREATE_OK) {
+      free(filepath);
+      filepath = NULL;
+      return state;
+    }
+    free(filepath);
+    filepath = NULL;
+  }
+
+  return state;
+}
+
+static bool is_dir_exist(const char *dirpath) {
   struct stat st;
   if (stat(dirpath, &st) == 0) {
     return S_ISDIR(st.st_mode);
   }
   return false;
+}
+
+static int count_args(int *count, char *argument, size_t argument_len) {
+  int res = 0;
+
+  for (size_t i = argument_len - 1; i > 0 && argument[i] != SEP_CHAR; --i) {
+    if (argument[i] == FILE_DELIMITATOR) {
+      ++(*count);
+    }
+  }
+
+  return (res + 1);
+}
+
+static bool is_arg_valid(const char *argument, size_t argument_len) {
+  for (size_t i = argument_len - 1; (i - 1) > 0; --i) {
+    if (argument[i] == argument[i - 1] && argument[i] == SEP_CHAR) {
+      return false;
+    } else if (argument[i] == FILE_DELIMITATOR && argument[i - 1] != SEP_CHAR) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static bool extract_list(int list_len, char (**list)[list_len], char *argument,
+                         size_t argument_len) {
+  if (!is_arg_valid(argument, argument_len)) {
+    return false;
+  }
+
+  int count = 0;
+  list[count] = argument;
+  ++count;
+
+  for (size_t i = argument_len - 1; i > 0; --i) {
+    if (argument[i] == FILE_DELIMITATOR) {
+      argument[i] = END_STR;
+      list[count] = argument + (i + 1);
+      ++count;
+    }
+  }
+
+  return true;
 }
