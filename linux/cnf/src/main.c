@@ -6,7 +6,7 @@
 #include "../include/cnf.h"
 
 int main(int argc, char **argv) {
-  CreateState state = create_different_dir(argv + 1, argc - 1);
+  CreateState state = choose_option(argv[1], argv + 2, argc - 2);
   if (state != CREATE_OK) {
     printf("[ERROR] - %d", state);
     return EXIT_FAILURE;

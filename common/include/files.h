@@ -41,7 +41,9 @@ enum CreateState {
   // unknow option
   CREATE_INVALID_OPTION = -15,
   // invalid argument for creating more files in different dirpaths
-  CREATE_INVALID_ARGUMENT = -16
+  CREATE_INVALID_ARGUMENT = -16,
+  // invalid argument control
+  CREATE_INVALID_ARGC = -17,
 };
 
 #define END_STR '\0'

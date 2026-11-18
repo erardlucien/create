@@ -20,13 +20,11 @@ struct AvaibleOption {
 
 typedef struct AvaibleOption AvaibleOption;
 
-extern CreateState create_in_same_dir(const char *dirpath, const char **argv,
-                                      int argc);
-extern CreateState create_different_filepath(const char **argv, int argc);
+extern CreateState create_in_same_dir(char *dirpath, char **argv, int argc);
+extern CreateState create_different_filepath(char **argv, int argc);
 // create differents files in the same directories
-extern CreateState create_different_dir(const char **argv, int argc);
-extern CreateState choose_option(const char *option, const char **argv,
-                                 int argc);
+extern CreateState create_different_dir(char **argv, int argc);
+extern CreateState choose_option(char *option, char **argv, int argc);
 
 #endif // !CNF_H
 // EOF

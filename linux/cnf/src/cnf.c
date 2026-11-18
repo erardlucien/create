@@ -199,6 +199,14 @@ CreateState create_file(const char *filepath, size_t fpath_len) {
 }
 
 CreateState choose_option(char *option, char **argv, int argc) {
+  if (option == NULL || argv == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  if (argc <= 0) {
+    return CREATE_INVALID_ARGC;
+  }
+
   AvaibleOption avaible_options[] = {{"--df", DIFFERENT_FILEPATH},
                                      {"--sd", SAME_DIR},
                                      {"--dd", DIFFERENT_DIRS}};
