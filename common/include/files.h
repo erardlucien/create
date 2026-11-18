@@ -42,7 +42,7 @@ enum CreateState {
   CREATE_INVALID_OPTION = -15,
   // invalid argument for creating more files in different dirpaths
   CREATE_INVALID_ARGUMENT = -16,
-  // invalid argument control
+  // invalid argument counter
   CREATE_INVALID_ARGC = -17,
 };
 
