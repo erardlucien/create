@@ -80,6 +80,11 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
     return CREATE_INVALID_DIRPATH;
   }
 
+  CreateState state = has_endstep(dirpath, dirpath_len);
+  if (state != CREATE_OK) {
+    return state;
+  }
+
   if (dirpath_len == strlen(STR_POINT) && strcmp(dirpath, STR_POINT) == 0) {
     return CREATE_OK;
   }
@@ -116,6 +121,14 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
 }
 
 CreateState create_file(const char *filepath, size_t fpath_len) {
+  if (filepath == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  if (fpath_len == 0) {
+    return CREATE_INVALID_FILEPATH;
+  }
+
   char *filename = NULL;
 
   char *copy_filepath = (char *)malloc(sizeof(filepath[0]) * (fpath_len + 1));
@@ -364,6 +377,22 @@ CreateState create_in_same_dir(char *dirpath, char **argv, int argc) {
   }
 
   return state;
+}
+
+CreateState has_endstep(const char *dirpath, size_t dirpath_len) {
+  if (dirpath == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  if (dirpath_len == 0) {
+    return CREATE_INVALID_DIRPATH;
+  }
+
+  if (dirpath[dirpath_len - 1] != SEP_CHAR) {
+    return CREATE_HASNO_ENDSEP;
+  }
+
+  return CREATE_OK;
 }
 
 static bool is_dir_exist(const char *dirpath) {
