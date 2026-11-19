@@ -17,7 +17,7 @@ will create in the directory /home/dummy/Documents log.txt, man.tex and then in 
 - --sd(same directory)
 *Example(on linux):
 `cnf --sd ~/Documents/new-project Makefile main.h main.c`
-In the directory /home/dummy/Documents/new-project will be created Makefile main.h and main.c.
+In the directory /home/dummy/Documents/new-project will be created Makefile, main.h and main.c.
 
 ## cnf
 
