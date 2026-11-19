@@ -1,13 +1,10 @@
 // standart library
 #include <stdio.h>
-#include <string.h>
 // project's header
 #include "../include/my_assert.h"
 
 #define LIST_SEP ','
 #define NULL_AS_STR "NULL"
-
-static AssertResult list_to_str(char **list_to_str, char **list, int list_len);
 
 AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
                             int line) {
@@ -67,22 +64,13 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
     actual = entry_copy->fptr(entry_copy->str, entry_copy->list,
                               entry_copy->list_len);
     if (actual != expected) {
-      char *arg_str = NULL;
-      AssertResult check =
-          list_to_str(&arg_str, entry_copy->list, entry_copy->list_len);
-      if (check == ASSERT_UNKNOWN_ERROR) {
-        fprintf(stderr, "Unknown error\n");
-        return check;
-      }
       fprintf(stderr,
               "[FAILURE] Failure at line %d, function %s for call %s(%s, [%s], "
               "%d), "
               "actual: %d, expected: %d\n",
               line, __func__, entry_copy->fptr_name,
-              entry_copy->str == NULL ? "NULL" : entry_copy->str, arg_str,
+              entry_copy->str == NULL ? "NULL" : entry_copy->str, "list",
               entry_copy->list_len, actual, expected);
-      free(arg_str);
-      arg_str = NULL;
       return ASSERT_FAILURE;
     }
   } break;
@@ -95,21 +83,12 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
     }
     actual = entry_copy->fptr(entry_copy->list, entry_copy->list_len);
     if (actual != expected) {
-      char *arg_str = NULL;
-      AssertResult check =
-          list_to_str(&arg_str, entry_copy->list, entry_copy->list_len);
-      if (check == ASSERT_UNKNOWN_ERROR) {
-        fprintf(stderr, "Unknown error\n");
-        return check;
-      }
       fprintf(
           stderr,
           "[FAILURE] Failure at line %d, function %s for call %s([%s], %d), "
           "actual: %d, expected: %d\n",
-          line, __func__, entry_copy->fptr_name, arg_str, entry_copy->list_len,
+          line, __func__, entry_copy->fptr_name, "list", entry_copy->list_len,
           actual, expected);
-      free(arg_str);
-      arg_str = NULL;
       return ASSERT_FAILURE;
     }
   } break;
@@ -140,37 +119,4 @@ void counting(AssertCounter *pcounter, AssertResult res) {
   default:
     break;
   }
-}
-
-static AssertResult list_to_str(char **list_to_str, char **list, int list_len) {
-  if (list == NULL || *list == NULL) {
-    *list_to_str = NULL_AS_STR;
-    return ASSERT_SUCCESS;
-  }
-  size_t len = 0;
-  for (int i = 0; i < list_len; ++i) {
-    if (list[i] == NULL) {
-      len += strlen(NULL_AS_STR);
-    } else {
-      len += strlen(list[i]);
-    }
-  }
-
-  ++len;
-
-  *list_to_str = (char *)malloc(len + list_len + 1);
-  if (*list_to_str == NULL) {
-    return ASSERT_UNKNOWN_ERROR;
-  }
-
-  for (int i = 0; i < list_len; ++i) {
-    if (list[i] == NULL) {
-      strcpy(*list_to_str, "NULL");
-    } else {
-      strcpy(*list_to_str, list[i]);
-      (*list_to_str)[strlen(list[i]) + 1] = LIST_SEP;
-    }
-  }
-
-  return ASSERT_SUCCESS;
 }
