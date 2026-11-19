@@ -11,12 +11,16 @@ are called *tests*. The main.h are just there as placeholder. **cnf** and **cdf*
 - --df (different filepath)
 - --dd (different directories) Here different files will be created in different directories
 *Example(on linux):*
+
 `cnf --dd /home/dummy/Documents/:log.txt:man.tex ~/Downloads/private/:index.html:main.js:main.css`
+
 will create in the directory /home/dummy/Documents log.txt, man.tex and then in the directory
 /home/dummy/Downloads/private index.html, main.js and main.css.(~ stand for the actual home-directory for the actual user in our example is /home/dummy here)
 - --sd(same directory)
 *Example(on linux):
+
 `cnf --sd ~/Documents/new-project Makefile main.h main.c`
+
 In the directory /home/dummy/Documents/new-project will be created Makefile, main.h and main.c.
 
 ## cnf
@@ -27,6 +31,7 @@ Create more file at once
 - **Note:** The directory path must already exist. This tool does not automatically create missing subdirectories.
 
 *Example:*
+
 - `cnf --df /home/dummy/Documents/text.txt /home/dummy/Downloads/private/man.tex (on linux)`
 
 ## cdf
