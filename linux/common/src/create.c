@@ -60,8 +60,10 @@ CreateState extract_directory_path(char **dirpath, char *copy_filepath,
 }
 
 CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
-  if (dirpath == NULL || strlen(dirpath) != dirpath_len ||
-      dirpath_len > PATH_MAX) {
+  if (dirpath == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+  if (strlen(dirpath) != dirpath_len || dirpath_len > PATH_MAX) {
     return CREATE_INVALID_DIRPATH;
   }
 
