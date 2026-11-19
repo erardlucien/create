@@ -12,7 +12,7 @@ are called *tests*. The main.h are just there as placeholder. **cnf** and **cdf*
 - --dd (different directories) Here different files will be created in different directories
 *Example(on linux):*
 `cnf --dd /home/dummy/Documents/:log.txt:man.tex ~/Downloads/private/:index.html:main.js:main.css`
-will create in the directory /home/dummy/Documents log.txt man.tex and then in the directory
+will create in the directory /home/dummy/Documents log.txt, man.tex and then in the directory
 /home/dummy/Downloads/private index.html, main.js and main.css.(~ stand for the actual home-directory for the actual user in our example is /home/dummy here)
 - --sd(same directory)
 *Example(on linux):
