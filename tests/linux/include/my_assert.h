@@ -22,9 +22,10 @@ struct AssertCounter {
 
 typedef struct AssertCounter AssertCounter;
 
-#define ASSERT_EQ(entry, expected) assert_eq_impl((entry), (expected))
+#define ASSERT_EQ(entry, expected) assert_eq_impl((entry), (expected), __LINE__)
 
-extern AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected);
+extern AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
+                                   int line);
 
 extern void counting(AssertCounter *pcounter, AssertResult res);
 

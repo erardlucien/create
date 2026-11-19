@@ -72,7 +72,8 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
     return state;
   }
 
-  if (dirpath_len == strlen(HOME_DIR) && strcmp(dirpath, HOME_DIR) == 0) {
+  if (dirpath_len == strlen(HOMEUSER_DIR) &&
+      strcmp(dirpath, HOMEUSER_DIR) == 0) {
     return CREATE_OK;
   }
 

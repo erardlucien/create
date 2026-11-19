@@ -11,7 +11,7 @@
 #define STR_POINT "."
 #define HYPHEN '-'
 #define UNDERSCORE '_'
-#define HOME_DIR "~/"
+#define HOMEUSER_DIR "~/"
 #define FILE_DELIMITATOR ':'
 
 enum OptionIndex {

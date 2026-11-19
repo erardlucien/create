@@ -9,10 +9,12 @@
 
 static AssertResult list_to_str(char **list_to_str, char **list, int list_len);
 
-AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
+AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
+                            int line) {
 
   if (entry.entry == NULL) {
-    fprintf(stderr, "[ERROR] Null-pointer, entry.entry := NULL\n");
+    fprintf(stderr, "[ERROR] Null-pointer, entry.entry := NULL at line %d\n",
+            line);
     return ASSERT_NULL_POINTER_ERROR;
   }
   CreateState actual = CREATE_OK;
@@ -20,7 +22,8 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
   case FUNCTION_TYPE_1: {
     FunctionEntry1 *entry_copy = (FunctionEntry1 *)entry.entry;
     if (entry_copy->fptr == NULL) {
-      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL\n");
+      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL at line %d\n",
+              line);
       return ASSERT_NULL_POINTER_ERROR;
     }
     actual = entry_copy->fptr(entry_copy->str, entry_copy->str_len);
@@ -28,7 +31,7 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
       fprintf(stderr,
               "[FAILURE] Failure at line %d, function %s for call %s(%s, %zu), "
               "actual: %d, expected: %d\n",
-              __LINE__, __func__, entry_copy->fptr_name,
+              line, __func__, entry_copy->fptr_name,
               entry_copy->str == NULL ? "NULL" : entry_copy->str,
               entry_copy->str_len, actual, expected);
       return ASSERT_FAILURE;
@@ -37,7 +40,8 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
   case FUNCTION_TYPE_2: {
     FunctionEntry2 *entry_copy = (FunctionEntry2 *)entry.entry;
     if (entry_copy->fptr == NULL) {
-      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL\n");
+      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL at line %d\n",
+              line);
       return ASSERT_NULL_POINTER_ERROR;
     }
     actual = entry_copy->fptr(entry_copy->list, entry_copy->str,
@@ -47,7 +51,7 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
           stderr,
           "[FAILURE] Failure at line %d, function %s for call %s(%s, %s, %zu), "
           "actual: %d, expected: %d\n",
-          __LINE__, __func__, entry_copy->fptr_name, "NULL",
+          line, __func__, entry_copy->fptr_name, "NULL",
           entry_copy->str == NULL ? "NULL" : entry_copy->str,
           entry_copy->str_len, actual, expected);
       return ASSERT_FAILURE;
@@ -56,7 +60,8 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
   case FUNCTION_TYPE_3: {
     FunctionEntry3 *entry_copy = (FunctionEntry3 *)entry.entry;
     if (entry_copy->fptr == NULL) {
-      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL\n");
+      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL at line %d\n",
+              line);
       return ASSERT_NULL_POINTER_ERROR;
     }
     actual = entry_copy->fptr(entry_copy->str, entry_copy->list,
@@ -73,7 +78,7 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
               "[FAILURE] Failure at line %d, function %s for call %s(%s, [%s], "
               "%d), "
               "actual: %d, expected: %d\n",
-              __LINE__, __func__, entry_copy->fptr_name,
+              line, __func__, entry_copy->fptr_name,
               entry_copy->str == NULL ? "NULL" : entry_copy->str, arg_str,
               entry_copy->list_len, actual, expected);
       free(arg_str);
@@ -84,7 +89,8 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
   case FUNCTION_TYPE_4: {
     FunctionEntry4 *entry_copy = (FunctionEntry4 *)entry.entry;
     if (entry_copy->fptr == NULL) {
-      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL\n");
+      fprintf(stderr, "[ERROR] Null-pointer, entry.fptr := NULL at line %d\n",
+              line);
       return ASSERT_NULL_POINTER_ERROR;
     }
     actual = entry_copy->fptr(entry_copy->list, entry_copy->list_len);
@@ -100,8 +106,8 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected) {
           stderr,
           "[FAILURE] Failure at line %d, function %s for call %s([%s], %d), "
           "actual: %d, expected: %d\n",
-          __LINE__, __func__, entry_copy->fptr_name, arg_str,
-          entry_copy->list_len, actual, expected);
+          line, __func__, entry_copy->fptr_name, arg_str, entry_copy->list_len,
+          actual, expected);
       free(arg_str);
       arg_str = NULL;
       return ASSERT_FAILURE;
