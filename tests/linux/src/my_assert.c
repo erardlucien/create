@@ -3,7 +3,6 @@
 // project's header
 #include "../include/my_assert.h"
 
-#define LIST_SEP ','
 #define NULL_AS_STR "NULL"
 
 AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
@@ -29,7 +28,7 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
               "[FAILURE] Failure at line %d, function %s for call %s(%s, %zu), "
               "actual: %d, expected: %d\n",
               line, __func__, entry_copy->fptr_name,
-              entry_copy->str == NULL ? "NULL" : entry_copy->str,
+              entry_copy->str == NULL ? NULL_AS_STR : entry_copy->str,
               entry_copy->str_len, actual, expected);
       return ASSERT_FAILURE;
     }
@@ -49,7 +48,7 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
           "[FAILURE] Failure at line %d, function %s for call %s(%s, %s, %zu), "
           "actual: %d, expected: %d\n",
           line, __func__, entry_copy->fptr_name, "NULL",
-          entry_copy->str == NULL ? "NULL" : entry_copy->str,
+          entry_copy->str == NULL ? NULL_AS_STR : entry_copy->str,
           entry_copy->str_len, actual, expected);
       return ASSERT_FAILURE;
     }
@@ -64,13 +63,14 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
     actual = entry_copy->fptr(entry_copy->str, entry_copy->list,
                               entry_copy->list_len);
     if (actual != expected) {
-      fprintf(stderr,
-              "[FAILURE] Failure at line %d, function %s for call %s(%s, [%s], "
-              "%d), "
-              "actual: %d, expected: %d\n",
-              line, __func__, entry_copy->fptr_name,
-              entry_copy->str == NULL ? "NULL" : entry_copy->str, "list",
-              entry_copy->list_len, actual, expected);
+      fprintf(
+          stderr,
+          "[FAILURE] Failure at line %d, function %s for call %s(%s, [list], "
+          "%d), "
+          "actual: %d, expected: %d\n",
+          line, __func__, entry_copy->fptr_name,
+          entry_copy->str == NULL ? NULL_AS_STR : entry_copy->str,
+          entry_copy->list_len, actual, expected);
       return ASSERT_FAILURE;
     }
   } break;
@@ -85,10 +85,10 @@ AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,
     if (actual != expected) {
       fprintf(
           stderr,
-          "[FAILURE] Failure at line %d, function %s for call %s([%s], %d), "
+          "[FAILURE] Failure at line %d, function %s for call %s([list], %d), "
           "actual: %d, expected: %d\n",
-          line, __func__, entry_copy->fptr_name, "list", entry_copy->list_len,
-          actual, expected);
+          line, __func__, entry_copy->fptr_name, entry_copy->list_len, actual,
+          expected);
       return ASSERT_FAILURE;
     }
   } break;
