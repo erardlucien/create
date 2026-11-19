@@ -8,6 +8,8 @@
 
 // All possible value which could be return
 enum CreateState {
+  // help
+  CREATE_HELP = 1,
   // no failure has occurred
   CREATE_OK = 0,
   // something weng wrong, but the error is no recognise

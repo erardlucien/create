@@ -3,7 +3,7 @@
 #include <stdlib.h>
 // header project
 #include "../../../common/include/files.h"
-#include "../include/cnf.h"
+#include "../../common/include/create.h"
 
 int main(int argc, char **argv) {
   CreateState state = choose_option(argv[1], argv + 2, argc - 2);
