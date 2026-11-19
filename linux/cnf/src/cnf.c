@@ -35,7 +35,8 @@ CreateState create_different_dir(char **argv, int argc) {
     }
     snprintf(copy_argv[i], (arg_len + 1), "%s", argv[i]);
     int list_len = 0;
-    if (count_args(&list_len, copy_argv[i], arg_len) == -1) {
+    const int count_args_fails = -1;
+    if (count_args(&list_len, copy_argv[i], arg_len) == count_args_fails) {
       for (int j = 0; j <= i; ++j) {
         free(copy_argv[j]);
         copy_argv[j] = NULL;
