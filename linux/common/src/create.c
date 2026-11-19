@@ -16,15 +16,6 @@
 #include "../../../common/include/files.h"
 #include "../include/create.h"
 
-#define SEP_STR "/"
-#define SEP_CHAR '/'
-#define TWO_POINTS ".."
-#define POINT '.'
-#define STR_POINT "."
-#define HYPHEN '-'
-#define UNDERSCORE '_'
-#define FILE_DELIMITATOR ':'
-
 CreateState extract_filename(char **filename, char *filepath,
                              size_t fpath_len) {
 
@@ -77,6 +68,10 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
   CreateState state = has_endstep(dirpath, dirpath_len);
   if (state != CREATE_OK) {
     return state;
+  }
+
+  if (dirpath_len == strlen(HOME_DIR) && strcmp(dirpath, HOME_DIR) == 0) {
+    return CREATE_OK;
   }
 
   if (dirpath_len == strlen(STR_POINT) && strcmp(dirpath, STR_POINT) == 0) {
