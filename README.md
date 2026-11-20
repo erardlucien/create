@@ -1,36 +1,45 @@
 # create
 
-This project should implement two programs cnf and cdf, which create more files at once.
+This project implements two programs **cnf** and **cdf**, which allow you to create multiple files at once.
+
+## News
+
+**cnf** is nearly fully implemented for linux, but need to be tested, for now only *validate_dirpath()* was tested.
 
 ## Structure of the project
 
-The directory *common* is for what not specific for **linux** or **windows**, while the following directories *linux*
-is specific to **linux** and *windows* is specific **windows**. This project have now directory for tests, which
-are called *tests*. The main.h are just there as placeholder. **cnf** and **cdf** will have 4 options:
-- --help
-- --df (different filepath)
-- --dd (different directories) Here different files will be created in different directories
+- `common/`: Contains code that is indepedent of the operating system.
+- `linux/`:  Contaions Linux-specific code.
+- `windows`: Contains Windows-specific code.
+- `tests`: Contains the test files for the projects.
+- `main.h`: Currently serve as a placeholder.
+
+Both **cnf** and **cdf** support following options:
+- `--help`
+- `--df` (different filepaths)
+- `dd` (different directories): Alllows creating files in different directories.
 
 *Example(on linux):*
 
 `cnf --dd /home/dummy/Documents/:log.txt:man.tex ~/Downloads/private/:index.html:main.js:main.css`
 
-will create in the directory /home/dummy/Documents log.txt, man.tex and then in the directory
-/home/dummy/Downloads/private index.html, main.js and main.css.(~ stand for the actual home-directory for the actual user in our example is /home/dummy here)
-- --sd(same directory)
+This create `log.txt` and  `man.tex` in `/home/dummy/Documents`
+and `index.html`, `main.js` `and main.css` in `/home/dummy/Downloads/private`.(`~` expands to the current user's home directory).
+
+- `--sd` (same directory): Creates multiple files within the same directory.
 
 *Example(on linux)*:
 
 `cnf --sd ~/Documents/new-project Makefile main.h main.c`
 
-In the directory /home/dummy/Documents/new-project will be created Makefile, main.h and main.c.
+This creates `Makefile`, `main.h` and `main.c`  inside `/home/dummy/Documents/new-projects`.
 
 ## cnf
 
-Create more file at once
+Create multiple files at once
 
-- You can also use it to create a single file, but it is best suited for creating multiple files simultaneously.
-- **Note:** The directory path must already exist. This tool does not automatically create missing subdirectories.
+- Can de used for single file, but is optimized for multiple files simultaneously.
+- **Note:** Target directories must alredy exist. This tool does not automatically create missing directories.
 
 *Example:*
 
@@ -38,5 +47,8 @@ Create more file at once
 
 ## cdf
 
-Create the file/files and its directory, its parent-directories, if they don't already exist and the file with the help of the filepath.
+Creates files along with their parent directories automatically if they do not exist already.
 
+## > [!WARNING]
+
+Both programs need you to have rights to create anything in the targeted path.
