@@ -22,6 +22,13 @@ struct AssertCounter {
 
 typedef struct AssertCounter AssertCounter;
 
+struct AssertEntry {
+  FunctionEntry entry;
+  CreateState expected;
+};
+
+typedef struct AssertEntry AssertEntry;
+
 #define ASSERT_EQ(entry, expected) assert_eq_impl((entry), (expected), __LINE__)
 
 extern AssertResult assert_eq_impl(FunctionEntry entry, CreateState expected,

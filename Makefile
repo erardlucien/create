@@ -34,3 +34,6 @@ $(OBJ_DIR)/test_dir_validation.o:
 	$(CC) $(CFLAGS) -c $(TESTS_LINUX_DIR)/src/test_dir_validation.c -o $(OBJ_DIR)/test_dir_validation.o
 test_dir_validation: $(test_dir_validation_gch) $(test_dir_validation_objs)
 	$(CC) $(CFLAGS) -I $(GCH_DIR) $(test_dir_validation_objs) -o $(BIN_DIR)/./test_dir_validation
+clean:
+	rm -f $(GCH_DIR)/*.h.gch $(OBJ_DIR)/*.o
+

@@ -85,7 +85,10 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
     return CREATE_OK;
   }
 
-  size_t start_index = 2;
+  size_t start_index = (dirpath[0] == dirpath[1] && dirpath[0] == POINT) ||
+                               (dirpath[0] == POINT && dirpath[1] == SEP_CHAR)
+                           ? 1
+                           : 0;
 
   for (size_t i = start_index; (i + 1) < dirpath_len; ++i) {
     if (dirpath[i] == dirpath[i + 1] && dirpath[i] == POINT) {
@@ -107,6 +110,10 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
         dirpath[i] != POINT) {
       return CREATE_INVALID_DIRPATH;
     }
+  }
+
+  if (dirpath[0] == POINT && isalnum((unsigned char)dirpath[1])) {
+    return CREATE_INVALID_DIRPATH;
   }
 
   return CREATE_OK;
