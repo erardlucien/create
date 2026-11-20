@@ -85,10 +85,12 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
     return CREATE_OK;
   }
 
-  size_t start_index = (dirpath[0] == dirpath[1] && dirpath[0] == POINT) ||
-                               (dirpath[0] == POINT && dirpath[1] == SEP_CHAR)
-                           ? 1
-                           : 0;
+  size_t start_index =
+      (dirpath[0] == dirpath[1] && dirpath[0] == POINT) ||
+              (dirpath[0] == POINT && dirpath[1] == SEP_CHAR) ||
+              (dirpath[0] == HOMEUSER_DIR[0] && dirpath[1] == HOMEUSER_DIR[1])
+          ? 1
+          : 0;
 
   for (size_t i = start_index; (i + 1) < dirpath_len; ++i) {
     if (dirpath[i] == dirpath[i + 1] && dirpath[i] == POINT) {
@@ -96,18 +98,16 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
     }
   }
 
-  start_index = 0;
-
   for (size_t i = start_index; (i + 1) < dirpath_len; ++i) {
     if (dirpath[i] == dirpath[i + 1] && dirpath[i] == SEP_CHAR) {
       return CREATE_INVALID_DIRPATH;
     }
   }
 
-  for (size_t i = 0; i < dirpath_len; ++i) {
+  for (size_t i = start_index; i < dirpath_len; ++i) {
     if (!isalnum((unsigned char)dirpath[i]) && dirpath[i] != SEP_CHAR &&
         dirpath[i] != HYPHEN && dirpath[i] != UNDERSCORE &&
-        dirpath[i] != POINT) {
+        dirpath[i] != POINT && dirpath[i]) {
       return CREATE_INVALID_DIRPATH;
     }
   }

@@ -37,6 +37,12 @@ int main(void) {
        CREATE_INVALID_DIRPATH},
       {{&(REGISTER_ENTRY1(validate_dirpath, ".m/", 1)), FUNCTION_TYPE_1},
        CREATE_INVALID_DIRPATH},
+      {{&(REGISTER_ENTRY1(validate_dirpath, "~/docs/", strlen("~/docs/"))),
+        FUNCTION_TYPE_1},
+       CREATE_OK},
+      {{&(REGISTER_ENTRY1(validate_dirpath, "~/./", strlen("~/."))),
+        FUNCTION_TYPE_1},
+       CREATE_INVALID_DIRPATH},
   };
 
   for (size_t i = 0; i < sizeof(assert_entries) / sizeof(assert_entries[0]);
