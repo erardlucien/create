@@ -9,9 +9,9 @@ TESTS_LINUX_DIR = tests/linux
 LINUX_CNF_DIR = linux/cnf
 CFLAGS = -g -Wall -Werror -pedantic -O1 -fsanitize=address,undefined
 # For Object-files
-CFLAGS_FINAL_O = -O2 -flto -DNDEBUG -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE
+CFLAGS_RELEASE = -O2 -flto -DNDEBUG -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE
 # For Executable-files
-CFLAGS_FINAL_E= -O2 -flto -pie -Wl,-z,relro,-z,now -s
+LDFLAGS_RELEASE = -O2 -flto -pie -Wl,-z,relro,-z,now -s
 test_dir_validation_gch = $(GCH_DIR)/files.h.gch $(GCH_DIR)/create.h.gch $(GCH_DIR)/function_entry.h.gch $(GCH_DIR)/my_assert.h.gch
 test_dir_validation_objs = $(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/cnf.o $(OBJ_DIR)/my_assert.o $(OBJ_DIR)/test_dir_validation.o
 $(GCH_DIR)/files.h.gch:
