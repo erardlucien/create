@@ -8,41 +8,42 @@
 #include "../include/my_assert.h"
 
 int main(void) {
+  printf("---TEST---in file: %s\n", __FILE_NAME__);
   AssertCounter counter;
   AssertEntry assert_entries[] = {
       {{&(REGISTER_ENTRY1(validate_dirpath, NULL, 1)), FUNCTION_TYPE_1},
        CREATE_NULL_POINTER_EXCEPTION},
       {{&(REGISTER_ENTRY1(validate_dirpath, "m", 1)), FUNCTION_TYPE_1},
-       CREATE_HASNO_ENDSEP},
+       CREATE_INVALID_DIRPATH},
       {{&(REGISTER_ENTRY1(validate_dirpath, "/home/user-p/docs",
                           strlen("/home/user-p/docs"))),
         FUNCTION_TYPE_1},
-       CREATE_HASNO_ENDSEP},
-      {{&(REGISTER_ENTRY1(validate_dirpath, ":home/user-p/docs",
-                          strlen(":home/user-p/docs"))),
+       CREATE_INVALID_DIRPATH},
+      {{&(REGISTER_ENTRY1(validate_dirpath, ":home/user-p/docs/",
+                          strlen(":home/user-p/docs/"))),
         FUNCTION_TYPE_1},
-       CREATE_HASNO_ENDSEP},
+       CREATE_OK},
       {{&(REGISTER_ENTRY1(validate_dirpath, "/home/user-p/docs/",
                           strlen("/home/user-p/docs/"))),
         FUNCTION_TYPE_1},
        CREATE_OK},
       {{&(REGISTER_ENTRY1(validate_dirpath, "/m+/", strlen("/m+/"))),
         FUNCTION_TYPE_1},
-       CREATE_INVALID_DIRPATH},
+       CREATE_OK},
       {{&(REGISTER_ENTRY1(validate_dirpath, "m/", strlen("/m"))),
         FUNCTION_TYPE_1},
        CREATE_OK},
       {{&(REGISTER_ENTRY1(validate_dirpath, ".m/", strlen(".m/"))),
         FUNCTION_TYPE_1},
-       CREATE_INVALID_DIRPATH},
+       CREATE_OK},
       {{&(REGISTER_ENTRY1(validate_dirpath, ".m/", 1)), FUNCTION_TYPE_1},
        CREATE_INVALID_DIRPATH},
       {{&(REGISTER_ENTRY1(validate_dirpath, "~/docs/", strlen("~/docs/"))),
         FUNCTION_TYPE_1},
        CREATE_OK},
-      {{&(REGISTER_ENTRY1(validate_dirpath, "~/./", strlen("~/."))),
+      {{&(REGISTER_ENTRY1(validate_dirpath, "~/./", strlen("~/./"))),
         FUNCTION_TYPE_1},
-       CREATE_INVALID_DIRPATH},
+       CREATE_OK},
   };
 
   for (size_t i = 0; i < sizeof(assert_entries) / sizeof(assert_entries[0]);

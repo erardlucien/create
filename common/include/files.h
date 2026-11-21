@@ -30,20 +30,16 @@ enum CreateState {
   CREATE_EXTRACT_FILENANE_FAILED = -8,
   // failed extraction of directory-path
   CREATE_EXTRACT_DIRPATH_FAILED = -9,
-  // has a separator-character as the last character before '\0'
-  CREATE_HASNO_ENDSEP = -10,
   // Null-pointer exception
-  CREATE_NULL_POINTER_EXCEPTION = -11,
-  // no directory-path
-  CREATE_NO_DIRPATH = -12,
+  CREATE_NULL_POINTER_EXCEPTION = -10,
   // directory-path does not exist
-  CREATE_DIRPATH_DONT_EXIST = -13,
+  CREATE_DIRPATH_DONT_EXIST = -11,
   // unknow option
-  CREATE_INVALID_OPTION = -14,
+  CREATE_INVALID_OPTION = -12,
   // invalid argument for creating more files in different dirpaths
-  CREATE_INVALID_ARGUMENT = -15,
+  CREATE_INVALID_ARGUMENT = -13,
   // invalid argument counter
-  CREATE_INVALID_ARGC = -16,
+  CREATE_INVALID_ARGC = -14,
 };
 
 #define END_STR '\0'
@@ -65,6 +61,4 @@ extern CreateState extract_directory_path(char **dirpath, char *copy_filepath,
 extern CreateState validate_dirpath(const char *dirpath, size_t dirpath_len);
 // control if filename is valid
 extern CreateState validate_filename(const char *filename, size_t filename_len);
-// check if dirpath has separator-character as the last character before '\0'
-extern CreateState has_endstep(const char *dirpath, size_t dirpath_len);
 #endif

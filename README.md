@@ -10,8 +10,8 @@ This project implements two programs **cnf** and **cdf**, which allow you to cre
 
 - `common/`: Contains code that is indepedent of the operating system.
 - `linux/`:  Contaions Linux-specific code.
-- `windows`: Contains Windows-specific code.
-- `tests`: Contains the test files for the projects.
+- `windows/`: Contains Windows-specific code.
+- `tests/`: Contains the test files for the projects.
 - `main.h`: Currently serve as a placeholder.
 
 Both **cnf** and **cdf** support following options:

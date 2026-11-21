@@ -1,3 +1,5 @@
+# This Makefil eis essentially use for tests
+# Please don't use to create any cnf or cdf
 CC = gcc
 OBJ_DIR = build/objects
 GCH_DIR = build/pch
@@ -9,11 +11,11 @@ TESTS_LINUX_DIR = tests/linux
 LINUX_CNF_DIR = linux/cnf
 CFLAGS = -g -Wall -Werror -pedantic -O1 -fsanitize=address,undefined
 # For Object-files
-CFLAGS_RELEASE = -O2 -flto -DNDEBUG -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE
+# CFLAGS_RELEASE = -O2 -flto -DNDEBUG -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE
 # For Executable-files
-LDFLAGS_RELEASE = -O2 -flto -pie -Wl,-z,relro,-z,now -s
+# LDFLAGS_RELEASE = -O2 -flto -pie -Wl,-z,relro,-z,now -s
 test_dir_validation_gch = $(GCH_DIR)/files.h.gch $(GCH_DIR)/create.h.gch $(GCH_DIR)/function_entry.h.gch $(GCH_DIR)/my_assert.h.gch
-test_dir_validation_objs = $(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/cnf.o $(OBJ_DIR)/my_assert.o $(OBJ_DIR)/test_dir_validation.o
+test_dir_validation_objs = $(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/my_assert.o $(OBJ_DIR)/test_dir_validation.o
 $(GCH_DIR)/files.h.gch:
 	$(CC) $(CFLAGS) $(COMMON_DIR)/include/files.h -o $(GCH_DIR)/files.h.gch
 $(GCH_DIR)/create.h.gch:
@@ -32,8 +34,12 @@ $(OBJ_DIR)/my_assert.o:
 	$(CC) $(CFLAGS) -c $(TESTS_LINUX_DIR)/src/my_assert.c -o $(OBJ_DIR)/my_assert.o
 $(OBJ_DIR)/test_dir_validation.o:
 	$(CC) $(CFLAGS) -c $(TESTS_LINUX_DIR)/src/test_dir_validation.c -o $(OBJ_DIR)/test_dir_validation.o
-test_dir_validation: $(test_dir_validation_gch) $(test_dir_validation_objs)
-	$(CC) $(CFLAGS) -I $(GCH_DIR) $(test_dir_validation_objs) -o $(BIN_DIR)/./test_dir_validation
+linux_cnf_gch = $(GCH_DIR)/files.h.gch $(GCH_DIR)/create.h.gch
+linux_cnf_obj =	$(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/cnf.o
+linux_cnf: clean $(linux_cnf_gch) $(linux_cnf_obj)
+	$(CC) $(CFLAGS) -I $(GCH_DIR) $(linux_cnf_obj) -o $(BIN_DIR)/./linux_cnf
+linux_test_dir_validation: clean $(test_dir_validation_gch) $(test_dir_validation_objs)
+	$(CC) $(CFLAGS) -I $(GCH_DIR) $(test_dir_validation_objs) -o $(BIN_DIR)/./linux_test_dir_validation
 clean:
-	rm -f $(GCH_DIR)/*.h.gch $(OBJ_DIR)/*.o
+	rm -f $(GCH_DIR)/*.h.gch $(OBJ_DIR)/*.o $(BIN_DIR)/./*
 

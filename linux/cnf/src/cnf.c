@@ -1,147 +1,58 @@
 // standart library
-#include <asm-generic/errno-base.h>
-#include <fcntl.h>
-#include <linux/limits.h>
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
 #include <sys/types.h>
-#include <unistd.h>
-// header-project
-#include "../../../common/include/files.h"
+// project's header
 #include "../../common/include/create.h"
 
-CreateState create_different_dir(char **argv, int argc) {
-  CreateState state = CREATE_OK;
-  char **copy_argv = (char **)malloc(sizeof(char *) * argc);
-  if (copy_argv == NULL) {
-    return CREATE_UNKNOWN_ERROR;
+#define LEN(text) (text) != NULL ? sizeof(text) / sizeof(text[0]) : 1
+
+static void show_help(void);
+
+int main(int argc, char **argv) {
+  int option_index = 1;
+
+  CreateState state = choose_option(argv[option_index], argv, argc);
+  switch (state) {
+  case CREATE_OK:
+    break;
+  case CREATE_HELP:
+    show_help();
+    break;
+  case CREATE_INVALID_OPTION:
+    printf("Use cnf --help to see how use this cnf\n");
+    break;
+  default:
+    fprintf(stderr, "[ERROR] %d", state);
+    return EXIT_FAILURE;
   }
-
-  for (int i = 0; i < argc; ++i) {
-    size_t arg_len = strlen(argv[i]);
-    copy_argv[i] = (char *)malloc(sizeof(char) * (arg_len + 1));
-    if (copy_argv[i] == NULL) {
-      for (int j = 0; j < i; ++j) {
-        free(copy_argv[j]);
-        copy_argv[j] = NULL;
-      }
-      free(copy_argv);
-      copy_argv = NULL;
-      return CREATE_UNKNOWN_ERROR;
-    }
-    snprintf(copy_argv[i], (arg_len + 1), "%s", argv[i]);
-    int list_len = 0;
-    const int count_args_fails = -1;
-    if (count_args(&list_len, copy_argv[i], arg_len) == count_args_fails) {
-      for (int j = 0; j <= i; ++j) {
-        free(copy_argv[j]);
-        copy_argv[j] = NULL;
-      }
-      free(copy_argv);
-      copy_argv = NULL;
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    char **list = (char **)malloc(sizeof(char *) * list_len);
-    if (list == NULL) {
-      for (int j = 0; j <= i; ++j) {
-        free(copy_argv[j]);
-        copy_argv[j] = NULL;
-      }
-      free(copy_argv);
-      copy_argv = NULL;
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    if (!extract_list(list_len, &list, copy_argv[i], arg_len)) {
-      free(list);
-      list = NULL;
-      for (int j = 0; j <= i; ++j) {
-        free(copy_argv[j]);
-        copy_argv[j] = NULL;
-      }
-      free(copy_argv);
-      copy_argv = NULL;
-      return CREATE_INVALID_ARGUMENT;
-    }
-
-    char **plist = (list + 1);
-
-    state = create_in_same_dir(list[0], plist, (list_len - 1));
-    if (state != CREATE_OK) {
-      free(list);
-      list = NULL;
-      for (int j = 0; j <= i; ++j) {
-        free(copy_argv[j]);
-        copy_argv[j] = NULL;
-      }
-      free(copy_argv);
-      copy_argv = NULL;
-      return state;
-    }
-
-    free(list);
-    list = NULL;
-  }
-  for (int j = 0; j < argc; ++j) {
-    free(copy_argv[j]);
-    copy_argv[j] = NULL;
-  }
-  free(copy_argv);
-  copy_argv = NULL;
-
-  return state;
+  return EXIT_SUCCESS;
 }
 
-CreateState create_different_filepath(char **argv, int argc) {
-  CreateState state = CREATE_OK;
-  for (int i = 0; i < argc; ++i) {
-    state = create_file(argv[i], strlen(argv[i]));
-    if (state != CREATE_OK) {
-      return state;
-    }
+static void show_help() {
+  const char *msg[] = {
+      "You should use cnf like this cnf --option ![args]\n",
+      "![args] means depends from option\n",
+      "option can have 4 options:\n",
+      "--help show information how use this cnf\n",
+      "*Note:* here args must not be given.\n",
+      "--df create files in diffrent path\n",
+      "args is here the diffrent filepath\n.",
+      "*Example:* cnf --df /home/dummy/Docs/food.txt",
+      "/home/dummy/Downloads/secret.xml\n",
+      "--dd create differents files in differents directories\n",
+      "*Example:* cnf --dd /home/dummy/Documents/ --files :log.txt:main.cpp ",
+      "--dd ... --files ...\n",
+      "... meant here other arguments\n",
+      "*Note:* : must be given here or else no file will be created\n",
+      "--sd create more files in same directory\n",
+      "*Example:* cnf --sd /home/dummy/Docs/ --files food.txt data.csv\n",
+  };
+
+  size_t len = LEN(msg);
+
+  for (size_t i = 0; i < len; ++i) {
+    printf("%s", msg[i]);
   }
-
-  return state;
-}
-
-CreateState create_in_same_dir(char *dirpath, char **argv, int argc) {
-
-  if (!is_dir_exist(dirpath)) {
-    return CREATE_INVALID_DIRPATH;
-  }
-
-  const int fail_to_print = -1;
-  CreateState state = CREATE_OK;
-
-  for (int i = 0; i < argc; ++i) {
-    size_t fpath_len = strlen(dirpath) + strlen(argv[i]);
-    char *filepath = (char *)malloc(sizeof(dirpath[0]) * (fpath_len + 1));
-    if (filepath == NULL) {
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    if (snprintf(filepath, (fpath_len + 1), "%s%s", dirpath, argv[i]) ==
-        fail_to_print) {
-      free(filepath);
-      filepath = NULL;
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    state = create_file(filepath, fpath_len);
-
-    if (state != CREATE_OK) {
-      free(filepath);
-      filepath = NULL;
-      return state;
-    }
-    free(filepath);
-    filepath = NULL;
-  }
-
-  return state;
 }
