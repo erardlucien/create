@@ -21,7 +21,7 @@ Both **cnf** and **cdf** support following options:
 
 *Example(on linux):*
 
-`cnf --dd /home/dummy/Documents/:log.txt:man.tex ~/Downloads/private/:index.html:main.js:main.css`
+`cnf --dd /home/dummy/Documents/ --files :log.txt:man.tex --dd ~/Downloads/private/ --files :index.html:main.js:main.css`
 
 This create `log.txt` and  `man.tex` in `/home/dummy/Documents`
 and `index.html`, `main.js` `and main.css` in `/home/dummy/Downloads/private`.(`~` expands to the current user's home directory).
@@ -30,7 +30,7 @@ and `index.html`, `main.js` `and main.css` in `/home/dummy/Downloads/private`.(`
 
 *Example(on linux)*:
 
-`cnf --sd ~/Documents/new-project Makefile main.h main.c`
+`cnf --sd ~/Documents/new-project --files Makefile main.h main.c`
 
 This creates `Makefile`, `main.h` and `main.c`  inside `/home/dummy/Documents/new-projects`.
 
@@ -49,6 +49,6 @@ Create multiple files at once
 
 Creates files along with their parent directories automatically if they do not exist already.
 
-## > [!WARNING]
+## [!WARNING]
 
 Both programs need you to have rights to create anything in the targeted path.

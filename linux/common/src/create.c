@@ -146,7 +146,7 @@ CreateState create_file(const char *filepath, size_t fpath_len) {
 
   if (dirpath == NULL) {
     free(copy_filepath);
-    return CREATE_INVALID_DIRPATH;
+    return CREATE_EXTRACT_DIRPATH_FAILED;
   }
 
   res = validate_dirpath(dirpath, strlen(dirpath));
