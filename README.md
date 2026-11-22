@@ -17,11 +17,11 @@ This project implements two programs **cnf** and **cdf**, which allow you to cre
 Both **cnf** and **cdf** support following options:
 - `--help`
 - `--df` (different filepaths)
-- `dd` (different directories): Alllows creating files in different directories.
+- `--dd` (different directories): Alllows creating files in different directories.
 
 *Example(on linux):*
 
-`cnf --dd /home/dummy/Documents/ --files log.txt,man.tex --dd ~/Downloads/private/ --files :index.html,main.js,main.css`
+`cnf --dd /home/dummy/Documents/ --files log.txt,man.tex --dd ~/Downloads/private/ --files index.html,main.js,main.css`
 
 This create `log.txt` and  `man.tex` in `/home/dummy/Documents`
 and `index.html`, `main.js` `and main.css` in `/home/dummy/Downloads/private`.(`~` expands to the current user's home directory).
