@@ -22,12 +22,6 @@ static CreateState create_different_dir_helper(char *dirpath, char **argv,
                                                int argc);
 static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
                                              int argc);
-static CreateState count_elem(int *pcounter, char *start_deliminator,
-                              int *pindex_st_deliminator, char *end_deliminator,
-                              char **argv, int argc);
-static CreateState gen_list(int counter, char ***list, int index_st_deliminator,
-                            char **argv, int argc);
-
 CreateState extract_filename(char **filename, char *filepath,
                              size_t fpath_len) {
 
@@ -231,11 +225,30 @@ CreateState create_in_same_dir(char **argv, int argc) {
   int dirst_delim_i = 0;
   int filecounter = 0;
   int filest_delim_i = 0;
-  count_elem(&dircounter, SD_OPTION, &dirst_delim_i, FILE_MARKER, argv, argc);
-  count_elem(&filecounter, FILE_MARKER, &filest_delim_i, "", argv, argc);
+  CreateState state = count_elem(&dircounter, SD_OPTION, &dirst_delim_i,
+                                 FILE_MARKER, argv, argc);
+  if (state != CREATE_OK) {
+    return state;
+  }
+  state =
+      count_elem(&filecounter, FILE_MARKER, &filest_delim_i, "", argv, argc);
+  if (state != CREATE_OK) {
+    return state;
+  }
 
-  gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
-  gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
+  if (dircounter == 0 || filecounter == 0) {
+    return CREATE_UNKNOWN_ERROR;
+  }
+
+  state = gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
+  if (state != CREATE_OK) {
+    return state;
+  }
+  state = gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
+  if (state != CREATE_OK) {
+    free(dirlist);
+    return state;
+  }
 
   for (int i = 0; i < dircounter; ++i) {
     CreateState state =
@@ -253,7 +266,7 @@ CreateState create_in_same_dir(char **argv, int argc) {
 
   free(dirlist);
   free(filelist);
-  return CREATE_OK;
+  return state;
 }
 
 CreateState create_different_dir(char **argv, int argc) {
@@ -267,17 +280,37 @@ CreateState create_different_dir(char **argv, int argc) {
   int dirst_delim_i = 0;
   int filecounter = 0;
   int filest_delim_i = 0;
-  for (int i = 0; i < argc; ++i) {
-    count_elem(&dircounter, DD_OPTION, &dirst_delim_i, FILE_MARKER, argv, argc);
-    count_elem(&filecounter, FILE_MARKER, &filest_delim_i, DD_OPTION, argv,
-               argc);
+  for (int i = 0; i < argc && !(dirst_delim_i == (argc - 1) ||
+                                filest_delim_i == (argc - 1));
+       ++i) {
+    CreateState state = count_elem(&dircounter, DD_OPTION, &dirst_delim_i,
+                                   FILE_MARKER, argv, argc);
+    if (state != CREATE_OK) {
+      return state;
+    }
+    state = count_elem(&filecounter, FILE_MARKER, &filest_delim_i, DD_OPTION,
+                       argv, argc);
+    if (state != CREATE_OK) {
+      return state;
+    }
 
-    gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
-    gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
+    if (dircounter == 0 || filecounter == 0) {
+      return CREATE_UNKNOWN_ERROR;
+    }
+
+    state = gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
+    if (state != CREATE_OK) {
+      return state;
+    }
+
+    state = gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
+    if (state != CREATE_OK) {
+      free(dirlist);
+      return state;
+    }
 
     for (int j = 0; j < dircounter; ++j) {
-      CreateState state =
-          create_different_dir_helper(dirlist[j], filelist, filecounter);
+      state = create_different_dir_helper(dirlist[j], filelist, filecounter);
       if (state != CREATE_OK) {
         for (int k = 0; k < filecounter; ++k) {
           fprintf(stderr, "cnf fails to create %s in %s\n", filelist[k],
@@ -302,8 +335,8 @@ CreateState create_different_dir(char **argv, int argc) {
   return CREATE_OK;
 }
 
-static CreateState gen_list(int counter, char ***list, int index_st_deliminator,
-                            char **argv, int argc) {
+CreateState gen_list(int counter, char ***list, int index_st_deliminator,
+                     char **argv, int argc) {
   if (counter <= 0) {
     return CREATE_UNKNOWN_ERROR;
   }
@@ -319,10 +352,11 @@ static CreateState gen_list(int counter, char ***list, int index_st_deliminator,
   }
   return CREATE_OK;
 }
-static CreateState count_elem(int *pcounter, char *start_deliminator,
-                              int *pindex_st_deliminator, char *end_deliminator,
-                              char **argv, int argc) {
-  if (start_deliminator == NULL || argc == 0) {
+
+CreateState count_elem(int *pcounter, char *start_deliminator,
+                       int *pindex_st_deliminator, char *end_deliminator,
+                       char **argv, int argc) {
+  if (start_deliminator == NULL || end_deliminator == NULL || argc == 0) {
     return CREATE_UNKNOWN_ERROR;
   }
 
@@ -332,13 +366,14 @@ static CreateState count_elem(int *pcounter, char *start_deliminator,
     ++i;
   }
   *pindex_st_deliminator = i;
+  (*pcounter) = 0;
   ++i;
   while (i < argc && strncmp(argv[i], end_deliminator, strlen(argv[i])) != 0) {
     ++(*pcounter);
     ++i;
   }
 
-  if (i == *pindex_st_deliminator) {
+  if ((*pcounter) == 0) {
     return CREATE_UNKNOWN_ERROR;
   }
 
@@ -354,7 +389,7 @@ static CreateState create_different_dir_helper(char *dirpath, char **argv,
   }
 
   for (int i = 0; i < argc; ++i) {
-    size_t arg_len = strlen(dirpath) + strlen(argv[i]);
+    size_t arg_len = strlen(argv[i]);
     copy_argv[i] = (char *)malloc(sizeof(char) * (arg_len + 1));
     if (copy_argv[i] == NULL) {
       free_vector(&copy_argv, i);
@@ -463,25 +498,39 @@ void free_vector(char ***pvector, int n_row) {
 }
 
 bool is_arg_valid(const char *argument, size_t argument_len) {
+  if (argument == NULL || argument_len <= 0 ||
+      strlen(argument) != argument_len) {
+    return false;
+  }
+
+  if (argument[0] == FILE_DELIMITATOR ||
+      argument[argument_len - 1] == FILE_DELIMITATOR) {
+    return false;
+  }
+
   for (size_t i = 0; i < argument_len; ++i) {
-    if (argument[i] == FILE_DELIMITATOR) {
-      return true;
+    if (argument[i] == FILE_DELIMITATOR && (i + 1) < argument_len &&
+        (argument[i + 1] == FILE_DELIMITATOR || argument[i] == EMPTY_CHAR)) {
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 bool extract_list(int list_len, char ***list, char *argument,
                   size_t argument_len) {
-  if (list == NULL || *list == NULL || list_len <= 0 || argument_len <= 0 ||
+  if (list == NULL || *list == NULL || list_len <= 0 ||
       !is_arg_valid(argument, argument_len)) {
     return false;
   }
 
   int count = 0;
+  *(*(list) + count) = argument;
+  ++count;
 
   for (size_t i = 0; i < argument_len && count < list_len; ++i) {
-    if (argument[i] == FILE_DELIMITATOR && (i + 1) < argument_len) {
+    if (argument[i] == FILE_DELIMITATOR && (i + 1) < argument_len &&
+        argument[i + 1] != FILE_DELIMITATOR) {
       *(*(list) + count) = argument + (i + 1);
       argument[i] = END_STR;
       ++count;
@@ -494,12 +543,15 @@ bool extract_list(int list_len, char ***list, char *argument,
 int count_args(int *count, char *argument, size_t argument_len) {
   int res = -1;
 
-  if (count == NULL || argument == NULL || argument_len == 0) {
+  if (count == NULL || !is_arg_valid(argument, argument_len)) {
     return res;
   }
 
+  (*count) = 1;
+
   for (size_t i = 0; i < argument_len; ++i) {
-    if (argument[i] == FILE_DELIMITATOR) {
+    if (argument[i] == FILE_DELIMITATOR && (i + 1) < argument_len &&
+        argument[i + 1] != FILE_DELIMITATOR) {
       ++(*count);
     }
   }

@@ -13,12 +13,13 @@
 #define HYPHEN '-'
 #define UNDERSCORE '_'
 #define HOMEUSER_DIR "~/"
-#define FILE_DELIMITATOR ':'
+#define FILE_DELIMITATOR ','
 #define FILE_MARKER "--files"
 #define DF_OPTION "--df"
 #define DD_OPTION "--dd"
 #define SD_OPTION "--sd"
 #define HELP_OPTION "--help"
+#define EMPTY_CHAR ' '
 
 enum OptionIndex {
   INVALID_OPTION = -1,
@@ -41,6 +42,11 @@ extern CreateState create_in_same_dir(char **argv, int argc);
 extern CreateState create_different_filepath(char **argv, int argc);
 extern CreateState create_different_dir(char **argv, int argc);
 extern CreateState choose_option(char *option, char **argv, int argc);
+extern CreateState count_elem(int *pcounter, char *start_deliminator,
+                              int *pindex_st_deliminator, char *end_deliminator,
+                              char **argv, int argc);
+extern CreateState gen_list(int counter, char ***list, int index_st_deliminator,
+                            char **argv, int argc);
 
 extern int count_args(int *count, char *argument, size_t argument_len);
 extern bool extract_list(int list_len, char ***list, char *argument,
