@@ -18,7 +18,6 @@
 #define SD_OPTION "--sd"
 #define HELP_OPTION "--help"
 #define PARENT_MARKER "-p"
-#define CDF
 
 enum OptionIndex {
   INVALID_OPTION = -1,

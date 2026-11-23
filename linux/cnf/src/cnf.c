@@ -6,8 +6,6 @@
 // project's header
 #include "../../common/include/create.h"
 
-#undef CDF
-
 #define LEN(text) (text) != NULL ? sizeof(text) / sizeof(text[0]) : 1
 
 static void show_help(void);

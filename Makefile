@@ -29,6 +29,8 @@ $(OBJ_DIR)/files.o:
 	$(CC) $(CFLAGS) -c $(COMMON_DIR)/src/files.c -o $(OBJ_DIR)/files.o
 $(OBJ_DIR)/create.o:
 	$(CC) $(CFLAGS) -c $(LINUX_COMMON_DIR)/src/create.c -o $(OBJ_DIR)/create.o
+$(OBJ_DIR)/create_cdf.o:
+	$(CC) $(CFLAGS) -DCDF -c $(LINUX_COMMON_DIR)/src/create.c -o $(OBJ_DIR)/create_cdf.o
 $(OBJ_DIR)/cnf.o:
 	$(CC) $(CFLAGS) -c $(LINUX_CNF_DIR)/src/cnf.c -o $(OBJ_DIR)/cnf.o
 $(OBJ_DIR)/cdf.o:
@@ -40,7 +42,7 @@ $(OBJ_DIR)/test_dir_validation.o:
 linux_cnf_gch = $(GCH_DIR)/files.h.gch $(GCH_DIR)/create.h.gch
 linux_cnf_obj =	$(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/cnf.o
 linux_cdf_gch = $(GCH_DIR)/files.h.gch $(GCH_DIR)/create.h.gch
-linux_cdf_obj = $(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/cdf.o
+linux_cdf_obj = $(OBJ_DIR)/files.o $(OBJ_DIR)/create_cdf.o $(OBJ_DIR)/cdf.o
 linux_cdf: clean $(linux_cdf_gch) $(linux_cdf_obj)
 	$(CC) $(CFLAGS) -I $(GCH_DIR) $(linux_cdf_obj) -o $(BIN_DIR)/./linux_cdf
 linux_cnf: clean $(linux_cnf_gch) $(linux_cnf_obj)
