@@ -11,11 +11,6 @@
 static void show_help(void);
 
 int main(int argc, char **argv) {
-  if (argc < 2) {
-    fprintf(stderr, "[ERROR] Not enough argument, argc: %d\n", argc);
-    printf("Write cdf --help to see how use this cnf\n");
-    return EXIT_FAILURE;
-  }
   int option_index = 1;
 
   CreateState state = choose_option(argv[option_index], argv, argc);
