@@ -9,6 +9,7 @@ LINUX_COMMON_DIR = linux/common
 TESTS_COMMON_DIR = tests/common
 TESTS_LINUX_DIR = tests/linux
 LINUX_CNF_DIR = linux/cnf
+LINUX_CDF_DIR = linux/cdf
 CFLAGS = -g -Wall -Werror -pedantic -O1 -fsanitize=address,undefined
 # For Object-files
 # CFLAGS_RELEASE = -O2 -flto -DNDEBUG -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE
@@ -30,12 +31,18 @@ $(OBJ_DIR)/create.o:
 	$(CC) $(CFLAGS) -c $(LINUX_COMMON_DIR)/src/create.c -o $(OBJ_DIR)/create.o
 $(OBJ_DIR)/cnf.o:
 	$(CC) $(CFLAGS) -c $(LINUX_CNF_DIR)/src/cnf.c -o $(OBJ_DIR)/cnf.o
+$(OBJ_DIR)/cdf.o:
+	$(CC) $(CFLAGS) -c $(LINUX_CDF_DIR)/src/cdf.c -o $(OBJ_DIR)/cdf.o
 $(OBJ_DIR)/my_assert.o:
 	$(CC) $(CFLAGS) -c $(TESTS_LINUX_DIR)/src/my_assert.c -o $(OBJ_DIR)/my_assert.o
 $(OBJ_DIR)/test_dir_validation.o:
 	$(CC) $(CFLAGS) -c $(TESTS_LINUX_DIR)/src/test_dir_validation.c -o $(OBJ_DIR)/test_dir_validation.o
 linux_cnf_gch = $(GCH_DIR)/files.h.gch $(GCH_DIR)/create.h.gch
 linux_cnf_obj =	$(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/cnf.o
+linux_cdf_gch = $(GCH_DIR)/files.h.gch $(GCH_DIR)/create.h.gch
+linux_cdf_obj = $(OBJ_DIR)/files.o $(OBJ_DIR)/create.o $(OBJ_DIR)/cdf.o
+linux_cdf: clean $(linux_cdf_gch) $(linux_cdf_obj)
+	$(CC) $(CFLAGS) -I $(GCH_DIR) $(linux_cdf_obj) -o $(BIN_DIR)/./linux_cdf
 linux_cnf: clean $(linux_cnf_gch) $(linux_cnf_obj)
 	$(CC) $(CFLAGS) -I $(GCH_DIR) $(linux_cnf_obj) -o $(BIN_DIR)/./linux_cnf
 linux_test_dir_validation: clean $(test_dir_validation_gch) $(test_dir_validation_objs)

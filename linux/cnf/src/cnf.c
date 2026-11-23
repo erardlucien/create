@@ -6,6 +6,8 @@
 // project's header
 #include "../../common/include/create.h"
 
+#undef CDF
+
 #define LEN(text) (text) != NULL ? sizeof(text) / sizeof(text[0]) : 1
 
 static void show_help(void);
@@ -21,7 +23,7 @@ int main(int argc, char **argv) {
     show_help();
     break;
   case CREATE_INVALID_OPTION:
-    printf("Use cnf --help to see how use this cnf\n");
+    printf("Write cnf --help to see how use this cnf\n");
     break;
   default:
     fprintf(stderr, "[ERROR] %d", state);
@@ -42,7 +44,7 @@ static void show_help() {
       "*Example:* cnf --df /home/dummy/Docs/food.txt",
       "/home/dummy/Downloads/secret.xml\n",
       "--dd create differents files in differents directories\n",
-      "*Example:* cnf --dd /home/dummy/Documents/ --files :log.txt:main.cpp ",
+      "*Example:* cnf --dd /home/dummy/Documents/ --files log.txt main.cpp ",
       "--dd ... --files ...\n",
       "... meant here other arguments\n",
       "*Note:* : must be given here or else no file will be created\n",

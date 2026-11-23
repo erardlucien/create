@@ -40,6 +40,8 @@ enum CreateState {
   CREATE_INVALID_ARGUMENT = -13,
   // invalid argument counter
   CREATE_INVALID_ARGC = -14,
+  // failed creation of directory
+  CREATE_FAILED_DIR_CREATION = -15,
 };
 
 #define END_STR '\0'

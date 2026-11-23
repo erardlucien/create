@@ -1,4 +1,5 @@
 // standart library
+#include <asm-generic/errno-base.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -17,6 +18,7 @@
 #define ERRNO_OK 0
 #define MIN_ARGS 2
 #define HELP_LEN 2
+#define FAILED_MKDIR -1
 
 static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
                                              int argc);
@@ -143,7 +145,17 @@ CreateState create_file(const char *filepath, size_t fpath_len) {
     return res;
   }
 
+#ifdef CDF
+  res = create_directory(dirpath, strlen(dirpath));
+  if (res != CREATE_OK) {
+    free(copy_filepath);
+    return res;
+  }
+#endif
+
   mode_t mode = 0644;
+
+  errno = ERRNO_OK;
 
   int fd = open(filepath, O_CREAT | O_EXCL | O_WRONLY | O_NOFOLLOW | O_CLOEXEC,
                 mode);
@@ -207,6 +219,38 @@ CreateState choose_option(char *option, char **argv, int argc) {
   }
 }
 
+CreateState create_directory(const char *dirpath, size_t dirpath_len) {
+
+  CreateState state = validate_dirpath(dirpath, dirpath_len);
+  if (state != CREATE_OK) {
+    return state;
+  }
+
+  char *copy_dirpath = (char *)malloc(sizeof(char) * (dirpath_len + 1));
+  if (copy_dirpath == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  snprintf(copy_dirpath, (dirpath_len + 1), "%s", dirpath);
+  mode_t mode = 0755;
+
+  for (size_t i = 0; i < dirpath_len; ++i) {
+    if (copy_dirpath[i] == SEP_CHAR && i != 0) {
+      errno = ERRNO_OK;
+      copy_dirpath[i] = END_STR;
+      if (strcmp(copy_dirpath, getenv("HOME")) != 0 &&
+          mkdir(copy_dirpath, mode) == FAILED_MKDIR && errno != EEXIST) {
+        free(copy_dirpath);
+        return CREATE_FAILED_DIR_CREATION;
+      }
+      copy_dirpath[i] = SEP_CHAR;
+    }
+  }
+
+  free(copy_dirpath);
+  return CREATE_OK;
+}
+
 CreateState create_in_same_dir(char **argv, int argc) {
   if (argv == NULL || argc == 0) {
     return CREATE_UNKNOWN_ERROR;
@@ -247,8 +291,7 @@ CreateState create_in_same_dir(char **argv, int argc) {
         create_in_same_dir_helper(dirlist[i], filelist, filecounter);
     if (state != CREATE_OK) {
       for (int j = 0; j < filecounter; ++j) {
-        fprintf(stderr, "cnf fails to create %s in %s\n", filelist[j],
-                dirlist[i]);
+        fprintf(stderr, "fails to create %s in %s\n", filelist[j], dirlist[i]);
       }
       free(dirlist);
       free(filelist);
@@ -305,7 +348,7 @@ CreateState create_different_dir(char **argv, int argc) {
       state = create_in_same_dir_helper(dirlist[j], filelist, filecounter);
       if (state != CREATE_OK) {
         for (int k = 0; k < filecounter; ++k) {
-          fprintf(stderr, "cnf fails to create %s in %s\n", filelist[k],
+          fprintf(stderr, "fails to create %s in %s\n", filelist[k],
                   dirlist[j]);
         }
         free(dirlist);
@@ -378,7 +421,7 @@ CreateState create_different_filepath(char **argv, int argc) {
     state = create_file(argv[i], strlen(argv[i]));
     if (state != CREATE_OK) {
       for (int j = i; j < argc; ++j) {
-        fprintf(stderr, "cnf fails to create %s", argv[i]);
+        fprintf(stderr, "fails to create %s\n", argv[j]);
       }
       return state;
     }

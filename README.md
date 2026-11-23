@@ -4,7 +4,8 @@ This project implements two programs **cnf** and **cdf**, which allow you to cre
 
 ## News
 
-**cnf** is nearly fully implemented for linux, but need to be tested, for now only *validate_dirpath()* was tested.
+**cnf** still nearly fully implemented for *linux*, but need to be tested, for now only *validate_dirpath()* was tested.
+**cdf** is nearly fully implemented for *linux* but need to be tested.
 
 ## Structure of the project
 
@@ -51,5 +52,5 @@ Creates files along with their parent directories automatically if they do not e
 
 ## [!WARNING]
 
-Both programs need you to have rights to create anything in the targeted path. Hidden files are not allowed to be created.
-Wildcard-effects can not be stop, so the both programs work just around with them.
+- Both programs need you to have rights to create anything in the targeted path. Hidden files are not allowed to be created.
+- Wildcard-effects can not be stop, so the both programs work just around with them.
