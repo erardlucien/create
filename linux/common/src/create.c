@@ -18,8 +18,6 @@
 #define MIN_ARGS 2
 #define HELP_LEN 2
 
-static CreateState create_different_dir_helper(char *dirpath, char **argv,
-                                               int argc);
 static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
                                              int argc);
 CreateState extract_filename(char **filename, char *filepath,
@@ -68,7 +66,8 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
     return CREATE_NULL_POINTER_EXCEPTION;
   }
 
-  if (strlen(dirpath) != dirpath_len || dirpath_len > (PATH_MAX - 1)) {
+  if (strlen(dirpath) != dirpath_len || dirpath_len > (PATH_MAX - 1) ||
+      dirpath_len == 0) {
     return CREATE_INVALID_DIRPATH;
   }
 
@@ -76,17 +75,10 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
     return CREATE_INVALID_DIRPATH;
   }
 
-  if (dirpath_len == strlen(HOMEUSER_DIR) &&
-      strcmp(dirpath, HOMEUSER_DIR) == 0) {
-    return CREATE_OK;
-  }
-
-  if (dirpath_len == strlen(ACTUAL_DIR) && strcmp(dirpath, ACTUAL_DIR) == 0) {
-    return CREATE_OK;
-  }
-
-  if (dirpath_len == strlen(PARENT_DIR) && strcmp(dirpath, PARENT_DIR) == 0) {
-    return CREATE_OK;
+  for (size_t i = 0; i < dirpath_len; ++i) {
+    if (dirpath[i] == QUESTION_MARK || dirpath[i] == TILDE) {
+      return CREATE_INVALID_DIRPATH;
+    }
   }
 
   return CREATE_OK;
@@ -180,7 +172,7 @@ CreateState choose_option(char *option, char **argv, int argc) {
     return CREATE_NULL_POINTER_EXCEPTION;
   }
 
-  AvaibleOption avaible_options[] = {{DD_OPTION, DIFFERENT_FILEPATH},
+  AvaibleOption avaible_options[] = {{DF_OPTION, DIFFERENT_FILEPATH},
                                      {SD_OPTION, SAME_DIR},
                                      {DD_OPTION, DIFFERENT_DIRS},
                                      {HELP_OPTION, HELP}};
@@ -310,7 +302,7 @@ CreateState create_different_dir(char **argv, int argc) {
     }
 
     for (int j = 0; j < dircounter; ++j) {
-      state = create_different_dir_helper(dirlist[j], filelist, filecounter);
+      state = create_in_same_dir_helper(dirlist[j], filelist, filecounter);
       if (state != CREATE_OK) {
         for (int k = 0; k < filecounter; ++k) {
           fprintf(stderr, "cnf fails to create %s in %s\n", filelist[k],
@@ -380,54 +372,6 @@ CreateState count_elem(int *pcounter, char *start_deliminator,
   return CREATE_OK;
 }
 
-static CreateState create_different_dir_helper(char *dirpath, char **argv,
-                                               int argc) {
-  CreateState state = CREATE_OK;
-  char **copy_argv = (char **)malloc(sizeof(char *) * argc);
-  if (copy_argv == NULL) {
-    return CREATE_UNKNOWN_ERROR;
-  }
-
-  for (int i = 0; i < argc; ++i) {
-    size_t arg_len = strlen(argv[i]);
-    copy_argv[i] = (char *)malloc(sizeof(char) * (arg_len + 1));
-    if (copy_argv[i] == NULL) {
-      free_vector(&copy_argv, i);
-      return CREATE_UNKNOWN_ERROR;
-    }
-    snprintf(copy_argv[i], (arg_len + 1), "%s", argv[i]);
-    int list_len = 0;
-    const int count_args_fails = -1;
-    if (count_args(&list_len, copy_argv[i], arg_len) == count_args_fails) {
-      free_vector(&copy_argv, (i + 1));
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    char **list = (char **)malloc(sizeof(char *) * list_len);
-    if (list == NULL) {
-      free_vector(&copy_argv, (i + 1));
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    if (!extract_list(list_len, &list, copy_argv[i], arg_len)) {
-      free(list);
-      free_vector(&copy_argv, (i + 1));
-      return CREATE_INVALID_ARGUMENT;
-    }
-
-    state = create_in_same_dir_helper(dirpath, list, list_len);
-    if (state != CREATE_OK) {
-      free(list);
-      free_vector(&copy_argv, (i + 1));
-      return state;
-    }
-    free(list);
-  }
-  free_vector(&copy_argv, argc);
-
-  return state;
-}
-
 CreateState create_different_filepath(char **argv, int argc) {
   CreateState state = CREATE_OK;
   for (int i = 0; i < argc; ++i) {
@@ -495,68 +439,4 @@ void free_vector(char ***pvector, int n_row) {
   }
   free((*pvector));
   *pvector = NULL;
-}
-
-bool is_arg_valid(const char *argument, size_t argument_len) {
-  if (argument == NULL || argument_len <= 0 ||
-      strlen(argument) != argument_len) {
-    return false;
-  }
-
-  if (argument[0] == FILE_DELIMITATOR ||
-      argument[argument_len - 1] == FILE_DELIMITATOR) {
-    return false;
-  }
-
-  for (size_t i = 0; i < argument_len; ++i) {
-    if (argument[i] == FILE_DELIMITATOR && (i + 1) < argument_len &&
-        (argument[i + 1] == FILE_DELIMITATOR || argument[i] == EMPTY_CHAR)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool extract_list(int list_len, char ***list, char *argument,
-                  size_t argument_len) {
-  if (list == NULL || *list == NULL || list_len <= 0 ||
-      !is_arg_valid(argument, argument_len)) {
-    return false;
-  }
-
-  int count = 0;
-  *(*(list) + count) = argument;
-  ++count;
-
-  for (size_t i = 0; i < argument_len && count < list_len; ++i) {
-    if (argument[i] == FILE_DELIMITATOR && (i + 1) < argument_len &&
-        argument[i + 1] != FILE_DELIMITATOR) {
-      *(*(list) + count) = argument + (i + 1);
-      argument[i] = END_STR;
-      ++count;
-    }
-  }
-
-  return true;
-}
-
-int count_args(int *count, char *argument, size_t argument_len) {
-  int res = -1;
-
-  if (count == NULL || !is_arg_valid(argument, argument_len)) {
-    return res;
-  }
-
-  (*count) = 1;
-
-  for (size_t i = 0; i < argument_len; ++i) {
-    if (argument[i] == FILE_DELIMITATOR && (i + 1) < argument_len &&
-        argument[i + 1] != FILE_DELIMITATOR) {
-      ++(*count);
-    }
-  }
-
-  res = 0;
-
-  return res;
 }

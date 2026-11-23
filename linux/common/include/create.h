@@ -7,19 +7,16 @@
 
 #define SEP_STR "/"
 #define SEP_CHAR '/'
-#define PARENT_DIR "../"
 #define POINT '.'
-#define ACTUAL_DIR "./"
 #define HYPHEN '-'
 #define UNDERSCORE '_'
-#define HOMEUSER_DIR "~/"
-#define FILE_DELIMITATOR ','
+#define TILDE '~'
+#define QUESTION_MARK '?'
 #define FILE_MARKER "--files"
 #define DF_OPTION "--df"
 #define DD_OPTION "--dd"
 #define SD_OPTION "--sd"
 #define HELP_OPTION "--help"
-#define EMPTY_CHAR ' '
 
 enum OptionIndex {
   INVALID_OPTION = -1,
@@ -48,9 +45,6 @@ extern CreateState count_elem(int *pcounter, char *start_deliminator,
 extern CreateState gen_list(int counter, char ***list, int index_st_deliminator,
                             char **argv, int argc);
 
-extern int count_args(int *count, char *argument, size_t argument_len);
-extern bool extract_list(int list_len, char ***list, char *argument,
-                         size_t argument_len);
 extern void free_vector(char ***pvector, int n_row);
 extern bool is_arg_valid(const char *argument, size_t argument_len);
 #endif // !CREATE_H

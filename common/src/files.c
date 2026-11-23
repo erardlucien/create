@@ -34,7 +34,7 @@ CreateState validate_filename(const char *filename, size_t filename_len) {
     return CREATE_NULL_POINTER_EXCEPTION;
   }
 
-  if (strlen(filename) != filename_len) {
+  if (strlen(filename) != filename_len || filename_len == 0) {
     return CREATE_INVALID_FILENAME;
   }
 
