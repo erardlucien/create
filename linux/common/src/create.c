@@ -1,5 +1,4 @@
 // standart library
-#include <asm-generic/errno-base.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -20,6 +19,8 @@
 #define HELP_LEN 2
 #define FAILED_MKDIR -1
 
+static CreateState create_different_dir_r(char **argv, int argc);
+static CreateState create_different_dir_p(char **argv, int argc);
 static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
                                              int argc);
 CreateState extract_filename(char **filename, char *filepath,
@@ -305,6 +306,112 @@ CreateState create_in_same_dir(char **argv, int argc) {
 }
 
 CreateState create_different_dir(char **argv, int argc) {
+  return argc > (MIN_ARGS + 1) && strcmp(argv[MIN_ARGS], PARENT_MARKER) == 0
+             ? create_different_dir_p(argv, argc)
+             : create_different_dir_r(argv, argc);
+}
+
+static CreateState create_different_dir_p(char **argv, int argc) {
+  if (argv == NULL || argc == 0) {
+    return CREATE_UNKNOWN_ERROR;
+  }
+
+  if (argc < (MIN_ARGS + 1)) {
+    return CREATE_INVALID_ARGC;
+  }
+
+  char **parentlist = NULL;
+  char **dirlist = NULL;
+  char **filelist = NULL;
+  int parentcounter = 0;
+  int parentst_delim_i = 0;
+  int dircounter = 0;
+  int dirst_delim_i = 0;
+  int filecounter = 0;
+  int filest_delim_i = 0;
+  for (int i = 0; i < argc && !(parentst_delim_i >= (argc - 1) ||
+                                dirst_delim_i >= (argc - 1) ||
+                                filest_delim_i >= (argc - 1));
+       ++i) {
+
+    CreateState state = count_elem(&parentcounter, PARENT_MARKER,
+                                   &parentst_delim_i, CHILD_MARKER, argv, argc);
+    if (state != CREATE_OK) {
+      return state;
+    }
+
+    state = count_elem(&dircounter, CHILD_MARKER, &dirst_delim_i, FILE_MARKER,
+                       argv, argc);
+    if (state != CREATE_OK) {
+      return state;
+    }
+    state = count_elem(&filecounter, FILE_MARKER, &filest_delim_i, DD_OPTION,
+                       argv, argc);
+    if (state != CREATE_OK) {
+      return state;
+    }
+
+    if (dircounter == 0 || filecounter == 0 || parentcounter == 0) {
+      return CREATE_UNKNOWN_ERROR;
+    }
+
+    state = gen_list(parentcounter, &parentlist, parentst_delim_i, argv, argc);
+    if (state != CREATE_OK) {
+      return state;
+    }
+
+    state = gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
+    if (state != CREATE_OK) {
+      free(parentlist);
+      return state;
+    }
+
+    state = gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
+    if (state != CREATE_OK) {
+      free(parentlist);
+      free(dirlist);
+      return state;
+    }
+
+    for (int j = 0; j < parentcounter; ++j) {
+      for (int k = 0; k < dircounter; ++k) {
+        size_t dirpath_len = strlen(parentlist[j]) + strlen(dirlist[k]) + 1;
+        char *dirpath = (char *)malloc(dirpath_len + 1);
+        snprintf(dirpath, (dirpath_len + 1), "%s/%s/", parentlist[j],
+                 dirlist[k]);
+        state = create_in_same_dir_helper(dirpath, filelist, filecounter);
+        if (state != CREATE_OK) {
+          for (int l = 0; l < filecounter; ++l) {
+            fprintf(stderr, "fails to create %s in %s\n", filelist[l], dirpath);
+          }
+          free(dirpath);
+          free(parentlist);
+          free(dirlist);
+          free(filelist);
+          return state;
+        }
+        free(dirpath);
+      }
+    }
+    parentst_delim_i += parentcounter;
+    dirst_delim_i += dircounter;
+    filest_delim_i += filecounter;
+    parentcounter = 0;
+    dircounter = 0;
+    filecounter = 0;
+
+    free(parentlist);
+    free(dirlist);
+    free(filelist);
+    parentlist = NULL;
+    dirlist = NULL;
+    filelist = NULL;
+  }
+
+  return CREATE_OK;
+}
+
+static CreateState create_different_dir_r(char **argv, int argc) {
   if (argv == NULL || argc == 0) {
     return CREATE_UNKNOWN_ERROR;
   }
@@ -315,8 +422,8 @@ CreateState create_different_dir(char **argv, int argc) {
   int dirst_delim_i = 0;
   int filecounter = 0;
   int filest_delim_i = 0;
-  for (int i = 0; i < argc && !(dirst_delim_i == (argc - 1) ||
-                                filest_delim_i == (argc - 1));
+  for (int i = 0; i < argc && !(dirst_delim_i >= (argc - 1) ||
+                                filest_delim_i >= (argc - 1));
        ++i) {
     CreateState state = count_elem(&dircounter, DD_OPTION, &dirst_delim_i,
                                    FILE_MARKER, argv, argc);

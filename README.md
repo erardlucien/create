@@ -49,6 +49,14 @@ Create multiple files at once
 ## cdf
 
 Creates files along with their parent directories automatically if they do not exist already.
+In option `--dd` you have parameter now `-p` for parent-directory and `-c` for child-directory. But you still can
+use it like this `cdf --dd /home/dummy/new-project --files index.html main.js main.css`. Both `-p` and `-c`
+must be use together. This two was implemented to work around Wildcard-effects like in the following
+example. There still oder possibility avaible, which need to be tested.
+
+*Example:*
+
+`cdf --dd -p ~ -c docs/lectures/ --files intro.txt chap01.txt --dd -p ../* -c project00 project01 project02 --files Mekefile placeholder.txt`
 
 ## [!WARNING]
 
