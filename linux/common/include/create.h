@@ -26,6 +26,7 @@ enum OptionIndex {
   SAME_DIR = 1,
   DIFFERENT_DIRS = 2,
   HELP = 3,
+  PARENT = 4,
 };
 
 typedef enum OptionIndex OptionIndex;

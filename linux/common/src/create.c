@@ -188,7 +188,8 @@ CreateState choose_option(char *option, char **argv, int argc) {
   AvaibleOption avaible_options[] = {{DF_OPTION, DIFFERENT_FILEPATH},
                                      {SD_OPTION, SAME_DIR},
                                      {DD_OPTION, DIFFERENT_DIRS},
-                                     {HELP_OPTION, HELP}};
+                                     {HELP_OPTION, HELP},
+                                     {PARENT_MARKER, PARENT}};
 
   const size_t avaible_options_len =
       sizeof(avaible_options) / sizeof(avaible_options[0]);
@@ -215,6 +216,11 @@ CreateState choose_option(char *option, char **argv, int argc) {
                            : CREATE_INVALID_OPTION;
   case HELP:
     return argc == HELP_LEN ? CREATE_HELP : CREATE_INVALID_OPTION;
+#ifdef CDF
+  case PARENT:
+    return argc > MIN_ARGS ? create_different_dir(argv, argc)
+                           : CREATE_INVALID_OPTION;
+#endif
   default:
     return CREATE_INVALID_OPTION;
   }
@@ -239,8 +245,8 @@ CreateState create_directory(const char *dirpath, size_t dirpath_len) {
     if (copy_dirpath[i] == SEP_CHAR && i != 0) {
       errno = ERRNO_OK;
       copy_dirpath[i] = END_STR;
-      if (strcmp(copy_dirpath, getenv("HOME")) != 0 &&
-          mkdir(copy_dirpath, mode) == FAILED_MKDIR && errno != EEXIST) {
+
+      if (mkdir(copy_dirpath, mode) == FAILED_MKDIR && errno != EEXIST) {
         free(copy_dirpath);
         return CREATE_FAILED_DIR_CREATION;
       }
@@ -306,7 +312,7 @@ CreateState create_in_same_dir(char **argv, int argc) {
 }
 
 CreateState create_different_dir(char **argv, int argc) {
-  return argc > (MIN_ARGS + 1) && strcmp(argv[MIN_ARGS], PARENT_MARKER) == 0
+  return argc > MIN_ARGS && strcmp(argv[MIN_ARGS - 1], PARENT_MARKER) == 0
              ? create_different_dir_p(argv, argc)
              : create_different_dir_r(argv, argc);
 }
@@ -345,8 +351,8 @@ static CreateState create_different_dir_p(char **argv, int argc) {
     if (state != CREATE_OK) {
       return state;
     }
-    state = count_elem(&filecounter, FILE_MARKER, &filest_delim_i, DD_OPTION,
-                       argv, argc);
+    state = count_elem(&filecounter, FILE_MARKER, &filest_delim_i,
+                       PARENT_MARKER, argv, argc);
     if (state != CREATE_OK) {
       return state;
     }
@@ -375,7 +381,7 @@ static CreateState create_different_dir_p(char **argv, int argc) {
 
     for (int j = 0; j < parentcounter; ++j) {
       for (int k = 0; k < dircounter; ++k) {
-        size_t dirpath_len = strlen(parentlist[j]) + strlen(dirlist[k]) + 1;
+        size_t dirpath_len = strlen(parentlist[j]) + strlen(dirlist[k]) + 2;
         char *dirpath = (char *)malloc(dirpath_len + 1);
         snprintf(dirpath, (dirpath_len + 1), "%s/%s/", parentlist[j],
                  dirlist[k]);
@@ -503,14 +509,13 @@ CreateState count_elem(int *pcounter, char *start_deliminator,
   }
 
   int i = (*pindex_st_deliminator) + (*pcounter);
-  while (i < argc &&
-         strncmp(argv[i], start_deliminator, strlen(argv[i])) != 0) {
+  while (i < argc && strcmp(argv[i], start_deliminator) != 0) {
     ++i;
   }
   *pindex_st_deliminator = i;
   (*pcounter) = 0;
   ++i;
-  while (i < argc && strncmp(argv[i], end_deliminator, strlen(argv[i])) != 0) {
+  while (i < argc && strcmp(argv[i], end_deliminator) != 0) {
     ++(*pcounter);
     ++i;
   }
