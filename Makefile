@@ -55,13 +55,13 @@ linux_cdf_obj = $(ALWAYS_CDF_OBJ) $(OBJ_DIR)/cdf.o
 linux_test_validate_filename_obj = $(ALWAYS_OBJ) $(ALWAYS_TEST_OBJ) $(OBJ_DIR)/test_validate_filename.o
 test_validate_dirpath_objs = $(ALWAYS_OBJ) $(ALWAYS_TEST_OBJ) $(OBJ_DIR)/test_validate_dirpath.o
 linux_cdf: $(linux_cdf_obj) | $(BIN_DIR)
-	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $@
+	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $(BIN_DIR)/$@
 linux_cnf: $(linux_cnf_gch) $(linux_cnf_obj) | $(BIN_DIR)
-	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $@
+	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $(BIN_DIR)/$@
 linux_test_validate_dirpath: $(test_validate_dirpath_objs) | $(BIN_DIR)
-	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $@
+	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $(BIN_DIR)/$@
 linux_test_validate_filename: $(linux_test_validate_filename_obj) | $(BIN_DIR)
-	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $@
+	$(CC) $(LDFLAGS) -I $(GCH_DIR) $^ -o $(BIN_DIR)/$@
 
 # For Object-files
 # CFLAGS_RELEASE = -O2 -flto -DNDEBUG -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE
