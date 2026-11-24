@@ -17,8 +17,8 @@
 #define DD_OPTION "--dd"
 #define SD_OPTION "--sd"
 #define HELP_OPTION "--help"
-#define PARENT_MARKER "-p"
-#define CHILD_MARKER "-c"
+#define PARENT_MARKER "--pd"
+#define CHILD_MARKER "--subd"
 
 enum OptionIndex {
   INVALID_OPTION = -1,
@@ -47,6 +47,8 @@ extern CreateState count_elem(int *pcounter, char *start_deliminator,
                               char **argv, int argc);
 extern CreateState gen_list(int counter, char ***list, int index_st_deliminator,
                             char **argv, int argc);
+extern CreateState control_args(char **argv, int argc, char *start_delim,
+                                char *midlle_delim, char *end_delim);
 
 extern void free_vector(char ***pvector, int n_row);
 extern bool is_arg_valid(const char *argument, size_t argument_len);

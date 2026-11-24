@@ -59,7 +59,7 @@ static bool is_character_valid(unsigned char c) {
   }
 
   for (size_t i = 0; i < ALLOWED_CHARACTER_LEN; ++i) {
-    if (c == ALLOWED_CHARACTERS[i]) {
+    if (c == ALLOWED_CHARACTERS[i] && i != 0) {
       return true;
     }
   }

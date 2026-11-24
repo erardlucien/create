@@ -4,8 +4,19 @@ This project implements two programs **cnf** and **cdf**, which allow you to cre
 
 ## News
 
-**cnf** still nearly fully implemented for *linux*, but need to be tested, for now only *validate_dirpath()* was tested.
-**cdf** is nearly fully implemented for *linux* but need to be tested.
+**cnf** still nearly fully implemented for *linux*, but need to be tested, for now only *validate_dirpath()*, *validate_filename()* were tested.
+**cdf** still nearly fully implemented for *linux* but need to be tested. More Test are comming. The actual Makefile is only for tests.
+The next function to be tested is *extract_directory_path()*
+Functions in files.h and create.h still need to be tested. The may seen usable, but some requirements still not be respected. Like:
+ 
+- How to make sure '--sd' follow by a second '--sd' is not valid.
+*Example:*
+
+* `cnf --sd /home/dummy/Documents --sd`
+
+- Or what will happened in this case:
+
+* `cnf --sd --files --files`
 
 ## Structure of the project
 
@@ -47,13 +58,13 @@ Create multiple files at once
 ## cdf
 
 Creates files along with their parent directories automatically if they do not exist already.
-In `cdf` you have parameter now `-p` for parent-directory and `-c` for child-directory. Both `-p` and `-c`
+In `cdf` you have parameter now `--pd` for parent-directory and `--subd` for subdirectory. Both `--pd` and `--subd`
 must be use together. This two was implemented to work around Wildcard-effects like in the following
 example. There still oder possibility avaible, which need to be tested.
 
 *Example:*
 
-`cdf -p ~ -c docs/lectures/ --files intro.txt chap01.txt -p ../* -c project00 project01 project02 --files Mekefile placeholder.txt`
+`cdf --pd ~ --subd docs/lectures/ --files intro.txt chap01.txt --pd ../* --subd project00 project01 project02 --files Makefile placeholder.txt`
 
 ## [!WARNING]
 
