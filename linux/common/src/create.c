@@ -19,19 +19,23 @@
 #define HELP_LEN 2
 #define FAILED_MKDIR -1
 
-static CreateState create_different_dir_r(char **argv, int argc);
-static CreateState create_different_dir_p(char **argv, int argc);
+static CreateState create_different_dir_r(ArgumentControlLer *pcontroller,
+                                          char **argv, int argc);
+static CreateState create_different_dir_p(ArgumentControlLer *pcontroller,
+                                          char **argv, int argc);
 static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
                                              int argc);
+static CreateState count_num_r(ArgumentControlLer *pcontroller);
+static CreateState count_num_p(ArgumentControlLer *pcontroller);
+static CreateState find_index_r(ArgumentControlLer *pcontroller, char *option,
+                                char **argv, int argc);
+static CreateState find_index_p(ArgumentControlLer *pcontroller, char **argv,
+                                int argc);
 CreateState extract_filename(char **filename, char *filepath,
                              size_t fpath_len) {
 
   if (filepath == NULL || fpath_len != strlen(filepath) ||
       fpath_len > PATH_MAX) {
-    return CREATE_INVALID_FILEPATH;
-  }
-
-  if (filepath[fpath_len - 1] == SEP_CHAR) {
     return CREATE_INVALID_FILEPATH;
   }
 
@@ -71,10 +75,6 @@ CreateState validate_dirpath(const char *dirpath, size_t dirpath_len) {
 
   if (strlen(dirpath) != dirpath_len || dirpath_len > (PATH_MAX - 1) ||
       dirpath_len == 0) {
-    return CREATE_INVALID_DIRPATH;
-  }
-
-  if (dirpath[dirpath_len - 1] != SEP_CHAR) {
     return CREATE_INVALID_DIRPATH;
   }
 
@@ -189,7 +189,7 @@ CreateState choose_option(char *option, char **argv, int argc) {
                                      {SD_OPTION, SAME_DIR},
                                      {DD_OPTION, DIFFERENT_DIRS},
                                      {HELP_OPTION, HELP},
-                                     {PARENT_MARKER, PARENT}};
+                                     {PD_OPTION, PARENT}};
 
   const size_t avaible_options_len =
       sizeof(avaible_options) / sizeof(avaible_options[0]);
@@ -260,270 +260,115 @@ CreateState create_directory(const char *dirpath, size_t dirpath_len) {
 
 CreateState create_in_same_dir(char **argv, int argc) {
   if (argv == NULL || argc == 0) {
-    return CREATE_UNKNOWN_ERROR;
+    return CREATE_INVALID_ARGUMENT;
   }
-  char **dirlist = NULL;
-  char **filelist = NULL;
-  int dircounter = 0;
-  int dirst_delim_i = 0;
-  int filecounter = 0;
-  int filest_delim_i = 0;
-  CreateState state = count_elem(&dircounter, SD_OPTION, &dirst_delim_i,
-                                 FILE_MARKER, argv, argc);
-  if (state != CREATE_OK) {
-    return state;
-  }
-  state =
-      count_elem(&filecounter, FILE_MARKER, &filest_delim_i, "", argv, argc);
+
+  ArgumentControlLer controller = {NULL, 0, 0, NULL, 0, 0, NULL, 0, 0};
+
+  CreateState state = find_index(&controller, SD_OPTION, argv, argc);
   if (state != CREATE_OK) {
     return state;
   }
 
-  if (dircounter == 0 || filecounter == 0) {
-    return CREATE_UNKNOWN_ERROR;
-  }
-
-  state = gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
+  state = count_num(&controller);
   if (state != CREATE_OK) {
     return state;
   }
-  state = gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
+
+  state = create_different_dir_r(&controller, argv, argc);
   if (state != CREATE_OK) {
-    free(dirlist);
     return state;
   }
 
-  for (int i = 0; i < dircounter; ++i) {
-    CreateState state =
-        create_in_same_dir_helper(dirlist[i], filelist, filecounter);
-    if (state != CREATE_OK) {
-      for (int j = 0; j < filecounter; ++j) {
-        fprintf(stderr, "fails to create %s in %s\n", filelist[j], dirlist[i]);
-      }
-      free(dirlist);
-      free(filelist);
-      return state;
-    }
-  }
-
-  free(dirlist);
-  free(filelist);
-  return state;
+  return CREATE_OK;
 }
 
 CreateState create_different_dir(char **argv, int argc) {
-  return argc > MIN_ARGS && strcmp(argv[MIN_ARGS - 1], PARENT_MARKER) == 0
-             ? create_different_dir_p(argv, argc)
-             : create_different_dir_r(argv, argc);
-}
+  ArgumentControlLer controller = {NULL, 0, 0, NULL, 0, 0, NULL, 0, 0};
+  if (argc > MIN_ARGS && strcmp(argv[MIN_ARGS - 1], PD_OPTION) == 0) {
+    for (int i = 0; i < argc;
+         i = controller.fmarker_i + controller.files_num + 1) {
 
-static CreateState create_different_dir_p(char **argv, int argc) {
-  if (argv == NULL || argc == 0) {
-    return CREATE_UNKNOWN_ERROR;
-  }
-
-  if (argc < (MIN_ARGS + 1)) {
-    return CREATE_INVALID_ARGC;
-  }
-
-  char **parentlist = NULL;
-  char **dirlist = NULL;
-  char **filelist = NULL;
-  int parentcounter = 0;
-  int parentst_delim_i = 0;
-  int dircounter = 0;
-  int dirst_delim_i = 0;
-  int filecounter = 0;
-  int filest_delim_i = 0;
-  for (int i = 0; i < argc && !(parentst_delim_i >= (argc - 1) ||
-                                dirst_delim_i >= (argc - 1) ||
-                                filest_delim_i >= (argc - 1));
-       ++i) {
-
-    CreateState state = count_elem(&parentcounter, PARENT_MARKER,
-                                   &parentst_delim_i, CHILD_MARKER, argv, argc);
-    if (state != CREATE_OK) {
-      return state;
-    }
-
-    state = count_elem(&dircounter, CHILD_MARKER, &dirst_delim_i, FILE_MARKER,
-                       argv, argc);
-    if (state != CREATE_OK) {
-      return state;
-    }
-    state = count_elem(&filecounter, FILE_MARKER, &filest_delim_i,
-                       PARENT_MARKER, argv, argc);
-    if (state != CREATE_OK) {
-      return state;
-    }
-
-    if (dircounter == 0 || filecounter == 0 || parentcounter == 0) {
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    state = gen_list(parentcounter, &parentlist, parentst_delim_i, argv, argc);
-    if (state != CREATE_OK) {
-      return state;
-    }
-
-    state = gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
-    if (state != CREATE_OK) {
-      free(parentlist);
-      return state;
-    }
-
-    state = gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
-    if (state != CREATE_OK) {
-      free(parentlist);
-      free(dirlist);
-      return state;
-    }
-
-    for (int j = 0; j < parentcounter; ++j) {
-      for (int k = 0; k < dircounter; ++k) {
-        size_t dirpath_len = strlen(parentlist[j]) + strlen(dirlist[k]) + 2;
-        char *dirpath = (char *)malloc(dirpath_len + 1);
-        snprintf(dirpath, (dirpath_len + 1), "%s/%s/", parentlist[j],
-                 dirlist[k]);
-        state = create_in_same_dir_helper(dirpath, filelist, filecounter);
-        if (state != CREATE_OK) {
-          for (int l = 0; l < filecounter; ++l) {
-            fprintf(stderr, "fails to create %s in %s\n", filelist[l], dirpath);
-          }
-          free(dirpath);
-          free(parentlist);
-          free(dirlist);
-          free(filelist);
-          return state;
-        }
-        free(dirpath);
-      }
-    }
-    parentst_delim_i += parentcounter;
-    dirst_delim_i += dircounter;
-    filest_delim_i += filecounter;
-    parentcounter = 0;
-    dircounter = 0;
-    filecounter = 0;
-
-    free(parentlist);
-    free(dirlist);
-    free(filelist);
-    parentlist = NULL;
-    dirlist = NULL;
-    filelist = NULL;
-  }
-
-  return CREATE_OK;
-}
-
-static CreateState create_different_dir_r(char **argv, int argc) {
-  if (argv == NULL || argc == 0) {
-    return CREATE_UNKNOWN_ERROR;
-  }
-
-  char **dirlist = NULL;
-  char **filelist = NULL;
-  int dircounter = 0;
-  int dirst_delim_i = 0;
-  int filecounter = 0;
-  int filest_delim_i = 0;
-  for (int i = 0; i < argc && !(dirst_delim_i >= (argc - 1) ||
-                                filest_delim_i >= (argc - 1));
-       ++i) {
-    CreateState state = count_elem(&dircounter, DD_OPTION, &dirst_delim_i,
-                                   FILE_MARKER, argv, argc);
-    if (state != CREATE_OK) {
-      return state;
-    }
-    state = count_elem(&filecounter, FILE_MARKER, &filest_delim_i, DD_OPTION,
-                       argv, argc);
-    if (state != CREATE_OK) {
-      return state;
-    }
-
-    if (dircounter == 0 || filecounter == 0) {
-      return CREATE_UNKNOWN_ERROR;
-    }
-
-    state = gen_list(dircounter, &dirlist, dirst_delim_i, argv, argc);
-    if (state != CREATE_OK) {
-      return state;
-    }
-
-    state = gen_list(filecounter, &filelist, filest_delim_i, argv, argc);
-    if (state != CREATE_OK) {
-      free(dirlist);
-      return state;
-    }
-
-    for (int j = 0; j < dircounter; ++j) {
-      state = create_in_same_dir_helper(dirlist[j], filelist, filecounter);
+      CreateState state = find_index(&controller, PD_OPTION, argv, argc);
       if (state != CREATE_OK) {
-        for (int k = 0; k < filecounter; ++k) {
-          fprintf(stderr, "fails to create %s in %s\n", filelist[k],
-                  dirlist[j]);
-        }
-        free(dirlist);
-        free(filelist);
+        return state;
+      }
+      state = count_num(&controller);
+      if (state != CREATE_OK) {
+        return state;
+      }
+
+      state = create_different_dir_p(&controller, argv, argc);
+      if (state != CREATE_OK) {
         return state;
       }
     }
-    dirst_delim_i += dircounter;
-    filest_delim_i += filecounter;
-    dircounter = 0;
-    filecounter = 0;
+  } else {
+    for (int i = 0; i < argc;
+         i = controller.fmarker_i + controller.files_num + 1) {
 
-    free(dirlist);
-    free(filelist);
-    dirlist = NULL;
-    filelist = NULL;
+      CreateState state = find_index(&controller, DD_OPTION, argv, argc);
+      if (state != CREATE_OK) {
+        return state;
+      }
+
+      state = count_num(&controller);
+      if (state != CREATE_OK) {
+        return state;
+      }
+
+      state = create_different_dir_r(&controller, argv, argc);
+      if (state != CREATE_OK) {
+        return state;
+      }
+    }
   }
 
   return CREATE_OK;
 }
 
-CreateState gen_list(int counter, char ***list, int index_st_deliminator,
-                     char **argv, int argc) {
-  if (counter <= 0) {
-    return CREATE_UNKNOWN_ERROR;
+static CreateState create_different_dir_p(ArgumentControlLer *pcontroller,
+                                          char **argv, int argc) {
+  if (argv == NULL || argc == 0) {
+    return CREATE_INVALID_ARGUMENT;
   }
 
-  *list = (char **)malloc(sizeof(char *) * (size_t)counter);
-  if (*list == NULL) {
-    return CREATE_UNKNOWN_ERROR;
-  }
-  int j = 0;
-  for (int i = index_st_deliminator + 1; i < argc && j < counter; ++i) {
-    *(*(list) + j) = argv[i];
-    ++j;
+  for (int i = 1; i <= pcontroller->parent_num; ++i) {
+    for (int j = 1; j <= pcontroller->child_num; ++j) {
+      int dirpath_len = strlen((pcontroller->parent_marker)[i]) + 1 +
+                        strlen((pcontroller->child_marker)[j]) + 1;
+      char *dirpath = (char *)malloc(dirpath_len + 1);
+      if (dirpath == NULL) {
+        return CREATE_NULL_POINTER_EXCEPTION;
+      }
+      snprintf(dirpath, dirpath_len + 1, "%s/%s/",
+               pcontroller->parent_marker[i], pcontroller->child_marker[j]);
+      CreateState state = create_in_same_dir_helper(
+          dirpath, pcontroller->files_marker + 1, pcontroller->files_num);
+      if (state != CREATE_OK) {
+        free(dirpath);
+        return state;
+      }
+      free(dirpath);
+    }
   }
   return CREATE_OK;
 }
 
-CreateState count_elem(int *pcounter, char *start_deliminator,
-                       int *pindex_st_deliminator, char *end_deliminator,
-                       char **argv, int argc) {
-  if (start_deliminator == NULL || end_deliminator == NULL || argc == 0) {
-    return CREATE_UNKNOWN_ERROR;
+static CreateState create_different_dir_r(ArgumentControlLer *pcontroller,
+                                          char **argv, int argc) {
+  if (argv == NULL || argc == 0) {
+    return CREATE_INVALID_ARGUMENT;
   }
 
-  int i = (*pindex_st_deliminator) + (*pcounter);
-  while (i < argc && strcmp(argv[i], start_deliminator) != 0) {
-    ++i;
+  for (int i = 1; i <= pcontroller->parent_num; ++i) {
+    CreateState state = create_in_same_dir_helper(pcontroller->parent_marker[i],
+                                                  pcontroller->files_marker + 1,
+                                                  pcontroller->files_num);
+    if (state != CREATE_OK) {
+      return state;
+    }
   }
-  *pindex_st_deliminator = i;
-  (*pcounter) = 0;
-  ++i;
-  while (i < argc && strcmp(argv[i], end_deliminator) != 0) {
-    ++(*pcounter);
-    ++i;
-  }
-
-  if ((*pcounter) == 0) {
-    return CREATE_UNKNOWN_ERROR;
-  }
-
   return CREATE_OK;
 }
 
@@ -540,6 +385,148 @@ CreateState create_different_filepath(char **argv, int argc) {
   }
 
   return state;
+}
+
+CreateState find_index(ArgumentControlLer *pcontroller, char *option,
+                       char **argv, int argc) {
+
+  if (pcontroller == NULL || option == NULL || argv == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  if (argc <= 0) {
+    return CREATE_INVALID_ARGC;
+  }
+
+  pcontroller->parent_marker = NULL;
+  pcontroller->child_marker = NULL;
+  pcontroller->files_marker = NULL;
+
+  pcontroller->argc = argc;
+
+  return strncmp(option, PD_OPTION, strlen(option) + 1) == 0
+             ? find_index_p(pcontroller, argv, argc)
+             : find_index_r(pcontroller, option, argv, argc);
+}
+
+static CreateState find_index_p(ArgumentControlLer *pcontroller, char **argv,
+                                int argc) {
+
+  int i = pcontroller->fmarker_i + 1;
+
+  while (i < argc && strncmp(argv[i], FILE_MARKER, strlen(argv[i]) + 1) != 0) {
+    if (strncmp(argv[i], PD_OPTION, strlen(argv[i]) + 1) == 0) {
+      pcontroller->parent_marker = argv + i;
+      pcontroller->pmarker_i = i;
+    } else if (strncmp(argv[i], CHILD_MARKER, strlen(argv[i])) == 0) {
+      pcontroller->child_marker = argv + i;
+      pcontroller->child_i = i;
+    }
+    ++i;
+  }
+
+  if (i < argc && pcontroller->pmarker_i < pcontroller->child_i &&
+      pcontroller->child_i < i) {
+    pcontroller->files_marker = argv + i;
+    pcontroller->fmarker_i = i;
+    return CREATE_OK;
+  }
+
+  return CREATE_INVALID_ARGUMENT;
+}
+
+static CreateState find_index_r(ArgumentControlLer *pcontroller, char *option,
+                                char **argv, int argc) {
+  int i = pcontroller->fmarker_i + 1;
+
+  while (i < argc && strncmp(argv[i], FILE_MARKER, strlen(argv[i]) + 1) != 0) {
+    if (strncmp(argv[i], option, strlen(argv[i]) + 1) == 0) {
+      pcontroller->parent_marker = argv + i;
+      pcontroller->pmarker_i = i;
+    }
+    ++i;
+  }
+
+  if (i < argc && pcontroller->pmarker_i < i) {
+    pcontroller->files_marker = argv + i;
+    pcontroller->fmarker_i = i;
+    return CREATE_OK;
+  }
+  return CREATE_INVALID_ARGUMENT;
+}
+CreateState count_num(ArgumentControlLer *pcontroller) {
+  if (pcontroller == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  if (pcontroller->parent_marker == NULL || pcontroller->files_marker == NULL) {
+    return CREATE_INVALID_ARGUMENT;
+  }
+
+  pcontroller->parent_num = 0;
+  pcontroller->child_num = 0;
+  pcontroller->files_num = 0;
+
+  bool is_pdoption = strncmp(pcontroller->parent_marker[0], PD_OPTION,
+                             strlen(PD_OPTION) + 1) == 0;
+
+  if (is_pdoption && pcontroller->child_marker == NULL) {
+    return CREATE_INVALID_ARGUMENT;
+  }
+
+  return is_pdoption ? count_num_p(pcontroller) : count_num_r(pcontroller);
+}
+
+static CreateState count_num_p(ArgumentControlLer *pcontroller) {
+  if (pcontroller == NULL || pcontroller->parent_marker == NULL) {
+    return CREATE_INVALID_ARGUMENT;
+  }
+  char **ptr = pcontroller->parent_marker + 1;
+
+  while (*ptr != NULL &&
+         strncmp(*ptr, pcontroller->parent_marker[0], strlen(*ptr) + 1) != 0 &&
+         (pcontroller->fmarker_i + pcontroller->files_num) <
+             pcontroller->argc) {
+    if (ptr < pcontroller->child_marker) {
+      ++pcontroller->parent_num;
+    } else if (ptr > pcontroller->child_marker &&
+               ptr < pcontroller->files_marker) {
+      ++pcontroller->child_num;
+    } else if (ptr > pcontroller->files_marker &&
+               strncmp(*ptr, FILE_MARKER, strlen(*ptr) + 1) != 0) {
+      ++pcontroller->files_num;
+    }
+    ++ptr;
+  }
+
+  return pcontroller->parent_num == 0 || pcontroller->child_num == 0 ||
+                 pcontroller->files_num == 0
+             ? CREATE_INVALID_ARGC
+             : CREATE_OK;
+}
+
+static CreateState count_num_r(ArgumentControlLer *pcontroller) {
+  if (pcontroller == NULL || pcontroller->parent_marker == NULL) {
+    return CREATE_INVALID_ARGUMENT;
+  }
+  char **ptr = pcontroller->parent_marker + 1;
+
+  while (*ptr != NULL &&
+         strncmp(*ptr, pcontroller->parent_marker[0], strlen(*ptr) + 1) != 0 &&
+         (pcontroller->fmarker_i + pcontroller->files_num) <
+             pcontroller->argc) {
+    if (ptr < pcontroller->files_marker) {
+      ++pcontroller->parent_num;
+    } else if (ptr > pcontroller->files_marker &&
+               strncmp(*ptr, FILE_MARKER, strlen(*ptr) + 1) != 0) {
+      ++pcontroller->files_num;
+    }
+    ++ptr;
+  }
+
+  return pcontroller->parent_num == 0 || pcontroller->files_num == 0
+             ? CREATE_INVALID_ARGC
+             : CREATE_OK;
 }
 
 static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
@@ -560,16 +547,25 @@ static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
   const int fail_to_print = -1;
 
   for (int i = 0; i < argc; ++i) {
-    size_t fpath_len = strlen(dirpath) + strlen(argv[i]);
+    size_t default_len = strlen(dirpath) + strlen(argv[i]);
+    size_t fpath_len = dirpath[strlen(dirpath) - 1] == SEP_CHAR
+                           ? default_len
+                           : default_len + 1;
     char *filepath = (char *)malloc(sizeof(dirpath[0]) * (fpath_len + 1));
     if (filepath == NULL) {
-      return CREATE_UNKNOWN_ERROR;
+      return CREATE_NULL_POINTER_EXCEPTION;
     }
 
-    if (snprintf(filepath, (fpath_len + 1), "%s%s", dirpath, argv[i]) ==
-        fail_to_print) {
+    if (fpath_len == default_len &&
+        snprintf(filepath, (fpath_len + 1), "%s%s", dirpath, argv[i]) ==
+            fail_to_print) {
       free(filepath);
-      return CREATE_UNKNOWN_ERROR;
+      return CREATE_FAILED_FILEPATH;
+    } else if (fpath_len == (default_len + 1) &&
+               snprintf(filepath, (fpath_len + 1), "%s/%s", dirpath, argv[i]) ==
+                   fail_to_print) {
+      free(filepath);
+      return CREATE_FAILED_FILEPATH;
     }
 
     state = create_file(filepath, fpath_len);
@@ -583,15 +579,4 @@ static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
   }
 
   return state;
-}
-
-void free_vector(char ***pvector, int n_row) {
-  if (pvector == NULL || *pvector == NULL) {
-    return;
-  }
-  for (int i = 0; i < n_row; ++i) {
-    free(*(*(pvector) + i));
-  }
-  free((*pvector));
-  *pvector = NULL;
 }

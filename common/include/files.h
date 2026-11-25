@@ -42,6 +42,8 @@ enum CreateState {
   CREATE_INVALID_ARGC = -14,
   // failed creation of directory
   CREATE_FAILED_DIR_CREATION = -15,
+  // failed creation of filepath
+  CREATE_FAILED_FILEPATH = -16,
 };
 
 #define END_STR '\0'

@@ -17,7 +17,7 @@
 #define DD_OPTION "--dd"
 #define SD_OPTION "--sd"
 #define HELP_OPTION "--help"
-#define PARENT_MARKER "--pd"
+#define PD_OPTION "--pd"
 #define CHILD_MARKER "--subd"
 
 enum OptionIndex {
@@ -38,19 +38,32 @@ struct AvaibleOption {
 
 typedef struct AvaibleOption AvaibleOption;
 
+struct ArgumentControlLer {
+  char **parent_marker;
+  // index of option marker;
+  int pmarker_i;
+  int parent_num;
+  char **child_marker;
+  // index of subdirector
+  int child_i;
+  int child_num;
+  char **files_marker;
+  // index of files_marker;
+  int fmarker_i;
+  int files_num;
+  int argc;
+};
+
+typedef struct ArgumentControlLer ArgumentControlLer;
+
 extern CreateState create_in_same_dir(char **argv, int argc);
 extern CreateState create_different_filepath(char **argv, int argc);
 extern CreateState create_different_dir(char **argv, int argc);
 extern CreateState choose_option(char *option, char **argv, int argc);
-extern CreateState count_elem(int *pcounter, char *start_deliminator,
-                              int *pindex_st_deliminator, char *end_deliminator,
+extern CreateState find_index(ArgumentControlLer *pcontroller, char *option,
                               char **argv, int argc);
-extern CreateState gen_list(int counter, char ***list, int index_st_deliminator,
-                            char **argv, int argc);
-extern CreateState control_args(char **argv, int argc, char *start_delim,
-                                char *midlle_delim, char *end_delim);
+extern CreateState count_num(ArgumentControlLer *pcontroller);
 
-extern void free_vector(char ***pvector, int n_row);
 extern bool is_arg_valid(const char *argument, size_t argument_len);
 #endif // !CREATE_H
 // EOF
