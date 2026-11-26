@@ -487,6 +487,18 @@ static CreateState count_num_p(ArgumentControlLer *pcontroller) {
          strncmp(*ptr, pcontroller->parent_marker[0], strlen(*ptr) + 1) != 0 &&
          (pcontroller->fmarker_i + pcontroller->files_num) <
              pcontroller->argc) {
+    if (strncmp(*ptr, pcontroller->parent_marker[0], strlen(*ptr) + 1) == 0 &&
+        ptr != pcontroller->parent_marker) {
+      return CREATE_INVALID_ARGC;
+    } else if (strncmp(*ptr, pcontroller->child_marker[0], strlen(*ptr) + 1) ==
+                   0 &&
+               ptr != pcontroller->child_marker) {
+      return CREATE_INVALID_ARGC;
+    } else if (strncmp(*ptr, pcontroller->files_marker[0], strlen(*ptr) + 1) ==
+                   0 &&
+               ptr != pcontroller->files_marker) {
+      return CREATE_INVALID_ARGC;
+    }
     if (ptr < pcontroller->child_marker) {
       ++pcontroller->parent_num;
     } else if (ptr > pcontroller->child_marker &&
@@ -515,6 +527,17 @@ static CreateState count_num_r(ArgumentControlLer *pcontroller) {
          strncmp(*ptr, pcontroller->parent_marker[0], strlen(*ptr) + 1) != 0 &&
          (pcontroller->fmarker_i + pcontroller->files_num) <
              pcontroller->argc) {
+    if (strncmp(*ptr, pcontroller->parent_marker[0], strlen(*ptr) + 1) == 0 &&
+        ptr != pcontroller->parent_marker) {
+      return CREATE_INVALID_ARGC;
+    } else if (strncmp(*ptr, CHILD_MARKER, strlen(*ptr) + 1) == 0) {
+      return CREATE_INVALID_ARGC;
+    } else if (strncmp(*ptr, pcontroller->files_marker[0], strlen(*ptr) + 1) ==
+                   0 &&
+               ptr != pcontroller->files_marker) {
+      return CREATE_INVALID_ARGC;
+    }
+
     if (ptr < pcontroller->files_marker) {
       ++pcontroller->parent_num;
     } else if (ptr > pcontroller->files_marker &&
