@@ -50,6 +50,15 @@ cdf <mode> <path(s)> --files <name(s)> [<mode> <path(s)> --files <name(s)>] ...
 
 `~` is expanded to the current user's home directory.
 
+**Note on `--sd`:** it is meant to be used **once** per command and can take one or more directories. Anything after a second `--sd` is ignored by design:
+
+```sh
+cdf --sd ../dir00 ../dir01 --files a.txt b.md --sd ~/Docs --files index.html
+# "--sd ~/Docs --files index.html" is ignored
+```
+
+If you need different file lists for different directories, use `--dd`.
+
 ### `cnf`
 
 Target directories **must already exist**. `cnf` never creates directories.
@@ -80,9 +89,6 @@ cdf --pd ~ --subd docs/lectures/ --files intro.txt chap01.txt
 - You need write permission for every target path.
 - Hidden files (names starting with `.`) cannot be created.
 - Wildcards are expanded by your shell before the program sees them, so their effects cannot be controlled. Without shell expansion, a wildcard character is treated as an ordinary (and invalid) character.
-- Known bug: when `--sd` is given several times, only the first block is used.
-  `cdf --sd ../dir00 ../dir01 --files a.txt b.md --sd ~/Docs --files index.html`
-  ignores `--sd ~/Docs --files index.html`. Use `--dd` instead.
 
 ## Project layout
 
@@ -102,4 +108,4 @@ Makefile  Test build (for now)
 
 ## License
 
-<!-- TODO: add a license (e.g. MIT) and a LICENSE file. --> 
+<!-- TODO: add a license (e.g. MIT) and a LICENSE file. -->
