@@ -7,16 +7,9 @@ This project implements two programs **cnf** and **cdf**, which allow you to cre
 **cnf** still nearly fully implemented for *linux*, but need to be tested, for now only *validate_dirpath()*, *validate_filename()* were tested.
 **cdf** still nearly fully implemented for *linux* but need to be tested. More Test are comming. The actual Makefile is only for tests.
 The next function to be tested is *extract_directory_path()*
-Functions in files.h and create.h still need to be tested. The may seen usable, but some requirements still not be respected. Like:
- 
-- How to make sure '--sd' follow by a second '--sd' is not valid.
-*Example:*
-
-* `cnf --sd /home/dummy/Documents --sd`
-
-- Or what will happened in this case:
-
-* `cnf --sd --files --files`
+Functions in files.h and create.h still need to be tested. The may seen usable, but some requirements still not be respected.
+Now if you wite `cdf --sd ../dir00 ../dir01 --files mant.txt resign.md --sd ~/Docs --files index.html`. `--sd ~/Docs --files index.html`
+will be ignored.
 
 ## Structure of the project
 
