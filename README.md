@@ -102,4 +102,4 @@ Makefile  Test build (for now)
 
 ## License
 
-<!-- TODO: add a license (e.g. MIT) and a LICENSE file. --> Without shell expansion wildcard-character is interpreted as normal character and will not be valid.
+<!-- TODO: add a license (e.g. MIT) and a LICENSE file. --> 
