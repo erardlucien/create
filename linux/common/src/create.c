@@ -185,6 +185,16 @@ CreateState choose_option(char *option, char **argv, int argc) {
     return CREATE_NULL_POINTER_EXCEPTION;
   }
 
+  MarkCounter counter = {0, 0, 0};
+
+  count_marker(&counter, argv, argc);
+  int option_counter = 0;
+  count_option(&option_counter, option, argv, argc);
+  CreateState state = validate_marker(&counter, option, option_counter);
+  if (state != CREATE_OK) {
+    return state;
+  }
+
   AvaibleOption avaible_options[] = {{DF_OPTION, DIFFERENT_FILEPATH},
                                      {SD_OPTION, SAME_DIR},
                                      {DD_OPTION, DIFFERENT_DIRS},
@@ -602,4 +612,59 @@ static CreateState create_in_same_dir_helper(char *dirpath, char **argv,
   }
 
   return state;
+}
+
+void count_marker(MarkCounter *pcounter, char **argv, int argc) {
+  if (pcounter == NULL || argv == NULL) {
+    return;
+  }
+
+  for (int i = 1; i < argc; ++i) {
+    if (strcmp(argv[i], DD_OPTION) == 0 || strcmp(argv[i], PD_OPTION) == 0 ||
+        strcmp(argv[i], DF_OPTION) == 0 || strcmp(argv[i], SD_OPTION) == 0) {
+      ++pcounter->pmarker_counter;
+    } else if (strcmp(argv[i], CHILD_MARKER) == 0) {
+      ++pcounter->cmarker_counter;
+    } else if (strcmp(argv[i], FILE_MARKER) == 0) {
+      ++pcounter->fmarker_counter;
+    }
+  }
+}
+
+void count_option(int *pcounter, char *option, char **argv, int argc) {
+  for (int i = 1; i < argc; ++i) {
+    if (strncmp(argv[i], option, strlen(argv[i]) + 1) == 0) {
+      ++(*pcounter);
+    }
+  }
+}
+
+CreateState validate_marker(MarkCounter *pcounter, char *option,
+                            int option_counter) {
+  if (pcounter == NULL || option == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  const int df_option_max = 1;
+
+  if (strncmp(option, DF_OPTION, strlen(option) + 1) == 0 ||
+      strncmp(option, SD_OPTION, strlen(option) + 1) == 0) {
+    if (pcounter->cmarker_counter != 0 ||
+        pcounter->pmarker_counter != df_option_max ||
+        option_counter != df_option_max ||
+        pcounter->fmarker_counter != df_option_max) {
+      return CREATE_INVALID_BLOCK;
+    }
+
+    return CREATE_OK;
+  }
+
+  if (pcounter->pmarker_counter != option_counter ||
+      pcounter->pmarker_counter != pcounter->cmarker_counter) {
+    return CREATE_INVALID_BLOCK_LIST;
+  }
+
+  return pcounter->fmarker_counter != pcounter->pmarker_counter
+             ? CREATE_INVALID_BLOCK_LIST
+             : CREATE_OK;
 }

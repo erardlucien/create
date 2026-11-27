@@ -44,6 +44,8 @@ enum CreateState {
   CREATE_FAILED_DIR_CREATION = -15,
   // failed creation of filepath
   CREATE_FAILED_FILEPATH = -16,
+  CREATE_INVALID_BLOCK = -17,
+  CREATE_INVALID_BLOCK_LIST = -18,
 };
 
 #define END_STR '\0'

@@ -50,15 +50,6 @@ cdf <mode> <path(s)> --files <name(s)> [<mode> <path(s)> --files <name(s)>] ...
 
 `~` is expanded to the current user's home directory.
 
-**Note on `--sd`:** it is meant to be used **once** per command and can take one or more directories. Anything after a second `--sd` is ignored by design:
-
-```sh
-cdf --sd ../dir00 ../dir01 --files a.txt b.md --sd ~/Docs --files index.html
-# "--sd ~/Docs --files index.html" is ignored
-```
-
-If you need different file lists for different directories, use `--dd`.
-
 ### `cnf`
 
 Target directories **must already exist**. `cnf` never creates directories.

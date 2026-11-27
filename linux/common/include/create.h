@@ -56,12 +56,26 @@ struct ArgumentControlLer {
 
 typedef struct ArgumentControlLer ArgumentControlLer;
 
+struct MarkCounter {
+  int pmarker_counter;
+  int cmarker_counter;
+  int fmarker_counter;
+};
+
+typedef struct MarkCounter MarkCounter;
+
 extern CreateState create_in_same_dir(char **argv, int argc);
 extern CreateState create_different_filepath(char **argv, int argc);
 extern CreateState create_different_dir(char **argv, int argc);
 extern CreateState choose_option(char *option, char **argv, int argc);
 extern CreateState find_index(ArgumentControlLer *pcontroller, char *option,
                               char **argv, int argc);
+extern void find_fmarker_i(int *index, char **argv, int argc);
+extern void find_pmarker_i(int *index, char **argv, int argc, char *option);
+extern void count_marker(MarkCounter *pcounter, char **argv, int argc);
+extern CreateState validate_marker(MarkCounter *pcounter, char *option,
+                                   int option_counter);
+extern void count_option(int *pcounter, char *option, char **argv, int argc);
 extern CreateState count_num(ArgumentControlLer *pcontroller);
 
 extern bool is_arg_valid(const char *argument, size_t argument_len);

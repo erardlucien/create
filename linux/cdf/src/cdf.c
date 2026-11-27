@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     show_help();
     break;
   case CREATE_INVALID_OPTION:
-    printf("Write cdf --help to see how use this cnf\n");
+    printf("Write cdf --help to see how use this cdf\n");
     break;
   default:
     fprintf(stderr, "[ERROR] %d", state);
