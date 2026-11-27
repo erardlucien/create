@@ -1,66 +1,105 @@
 # create
 
-This project implements two programs **cnf** and **cdf**, which allow you to create multiple files at once.
+Two small command-line tools for creating many files at once.
 
-## News
+| Tool  | What it does                                                        |
+| ----- | ------------------------------------------------------------------- |
+| `cnf` | **c**reate **n**ew **f**iles in directories that already exist      |
+| `cdf` | **c**reate **d**irectories and **f**iles, including missing parents |
 
-**cnf** still nearly fully implemented for *linux*, but need to be tested, for now only *validate_dirpath()*, *validate_filename()* were tested.
-**cdf** still nearly fully implemented for *linux* but need to be tested. More Test are comming. The actual Makefile is only for tests.
-The next function to be tested is *extract_directory_path()*
-Functions in files.h and create.h still need to be tested. The may seen usable, but some requirements still not be respected.
-Now if you wite `cdf --sd ../dir00 ../dir01 --files mant.txt resign.md --sd ~/Docs --files index.html`. `--sd ~/Docs --files index.html`
-will be ignored.
+> **Status:** work in progress. Linux only. Both tools are almost feature-complete but not yet fully tested (see [Project status](#project-status)).
 
-## Structure of the project
+## Quick start
 
-- `common/`: Contains code that is indepedent of the operating system.
-- `linux/`:  Contaions Linux-specific code.
-- `tests/`: Contains the test files for the projects.
+```sh
+# Three files in one directory
+cnf --sd ~/Documents/new-project --files Makefile main.h main.c
 
-Both **cnf** and **cdf** support following options:
-- `--help`
-- `--df` (different filepaths)
-- `--dd` (different directories): Alllows creating files in different directories.
+# Files in two different directories
+cnf --dd ~/Documents --files log.txt man.tex --dd ~/Downloads/private --files index.html main.js main.css
 
-*Example(on linux):*
+# Same, but missing directories are created for you
+cdf --dd ~/Documents --files log.txt --dd ~/new/nested/dir --files index.html
+```
 
-`cnf --dd /home/dummy/Documents/ --files log.txt man.tex --dd ~/Downloads/private/ --files index.html main.js main.css`
+## Building
 
-This create `log.txt` and  `man.tex` in `/home/dummy/Documents`
-and `index.html`, `main.js` `and main.css` in `/home/dummy/Downloads/private`.(`~` expands to the current user's home directory).
+<!-- TODO: add real build/install instructions. The current Makefile only builds the tests. -->
 
-- `--sd` (same directory): Creates multiple files within the same directory.
+```sh
+git clone https://github.com/erardlucien/create.git
+cd create
+make   # currently builds the test suite only
+```
 
-*Example(on linux)*:
+## Usage
 
-`cnf --sd ~/Documents/new-project --files Makefile main.h main.c`
+```
+cnf <mode> <path(s)> --files <name(s)> [<mode> <path(s)> --files <name(s)>] ...
+cdf <mode> <path(s)> --files <name(s)> [<mode> <path(s)> --files <name(s)>] ...
+```
 
-This creates `Makefile`, `main.h` and `main.c`  inside `/home/dummy/Documents/new-projects`.
+### Options (both tools)
 
-## cnf
+| Option   | Meaning                                                                    |
+| -------- | -------------------------------------------------------------------------- |
+| `--help` | Show usage information                                                     |
+| `--sd`   | **s**ame **d**irectory: create all following files in one directory        |
+| `--dd`   | **d**ifferent **d**irectories: each `--dd` block has its own file list     |
+| `--df`   | **d**ifferent **f**ilepaths: give each file as a full path                 |
 
-Create multiple files at once
+`~` is expanded to the current user's home directory.
 
-- Can de used for single file, but is optimized for multiple files simultaneously.
-- **Note:** Target directories must alredy exist. This tool does not automatically create missing directories.
+### `cnf`
 
-*Example:*
+Target directories **must already exist**. `cnf` never creates directories.
 
-- `cnf --df /home/dummy/Documents/text.txt /home/dummy/Downloads/private/man.tex (on linux)`
+```sh
+cnf --df /home/dummy/Documents/text.txt /home/dummy/Downloads/private/man.tex
+```
 
-## cdf
+### `cdf`
 
-Creates files along with their parent directories automatically if they do not exist already.
-In `cdf` you have parameter now `--pd` for parent-directory and `--subd` for subdirectory. Both `--pd` and `--subd`
-must be use together. This two was implemented to work around Wildcard-effects like in the following
-example. There still oder possibility avaible, which need to be tested.
+Like `cnf`, but missing parent directories are created automatically.
+In addition, `cdf` supports:
 
-*Example:*
+| Option   | Meaning                         |
+| -------- | ------------------------------- |
+| `--pd`   | parent directory                |
+| `--subd` | subdirectory (relative to `--pd`) |
 
-`cdf --pd ~ --subd docs/lectures/ --files intro.txt chap01.txt --pd ../* --subd project00 project01 project02 --files Makefile placeholder.txt`
+`--pd` and `--subd` must always be used **together**. They exist to work around
+shell wildcard expansion (see [Limitations](#limitations)).
 
-## [!WARNING]
+```sh
+cdf --pd ~ --subd docs/lectures/ --files intro.txt chap01.txt
+```
 
-- Both programs need you to have rights to create anything in the targeted path. Hidden files are not allowed to be created.
-- Wildcard-effects can not be stop, so the both programs work just around with them.
-- Without shell expansion wildcard-character is interpreted as normal character and will not be valid.
+## Limitations
+
+- You need write permission for every target path.
+- Hidden files (names starting with `.`) cannot be created.
+- Wildcards are expanded by your shell before the program sees them, so their effects cannot be controlled. Without shell expansion, a wildcard character is treated as an ordinary (and invalid) character.
+- Known bug: when `--sd` is given several times, only the first block is used.
+  `cdf --sd ../dir00 ../dir01 --files a.txt b.md --sd ~/Docs --files index.html`
+  ignores `--sd ~/Docs --files index.html`. Use `--dd` instead.
+
+## Project layout
+
+```
+common/   OS-independent code
+linux/    Linux-specific code
+tests/    Tests
+Makefile  Test build (for now)
+```
+
+## Project status
+
+- `cnf` and `cdf` are almost fully implemented for Linux.
+- Tested so far: `validate_dirpath()`, `validate_filename()`.
+- Next: `extract_directory_path()`, then the functions in `files.h` and `create.h`.
+- Some requirements are not yet met, so treat the tools as experimental.
+
+## License
+
+<!-- TODO: add a license (e.g. MIT) and a LICENSE file. --> Without shell expansion wildcard-character is interpreted as normal character and will not be valid.
