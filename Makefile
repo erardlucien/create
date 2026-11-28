@@ -42,7 +42,7 @@ $(OBJ_DIR)/$(LINUX_COMMON_DIR)/create_cdf.o: $(LINUX_COMMON_DIR_SRC)/create.c | 
 ALWAYS_OBJ = $(OBJ_DIR)/$(COMON_DIR)/files.o $(OBJ_DIR)/$(LINUX_COMMON_DIR)/create.o
 ALWAYS_CDF_OBJ = $(OBJ_DIR)/$(COMON_DIR)/files.o  $(OBJ_DIR)/$(LINUX_COMMON_DIR)/create_cdf.o
 ALWAYS_TEST_OBJ = $(OBJ_DIR)/my_assert.o
-linux_cnf_obj =	$(ALWAYS_OBJ) $(OBJ_DIR)/cnf.o
+linux_cnf_obj =	$(ALWAYS_OBJ) $(OBJ_DIR)/$(LINUX_CNF_DIR)/cnf.o
 linux_cdf_obj = $(ALWAYS_CDF_OBJ) $(OBJ_DIR)/$(LINUX_CDF_DIR)/cdf.o
 linux_test_validate_filename_obj = $(ALWAYS_OBJ) $(ALWAYS_TEST_OBJ) $(OBJ_DIR)/$(TESTS_LINUX_DIR)/test_validate_filename.o
 test_validate_dirpath_objs = $(ALWAYS_OBJ) $(ALWAYS_TEST_OBJ) $(OBJ_DIR)/$(TESTS_LINUX_DIR)/test_validate_dirpath.o
