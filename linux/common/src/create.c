@@ -208,6 +208,8 @@ CreateState choose_option(char *option, char **argv, int argc) {
 
   if (option_index == INVALID_OPTION) {
     return CREATE_INVALID_OPTION;
+  } else if (option_index == HELP) {
+    return argc == 2 ? CREATE_HELP : CREATE_INVALID_OPTION;
   }
 
   MarkCounter counter = {0, 0, 0};
