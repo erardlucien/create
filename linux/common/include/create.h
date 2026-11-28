@@ -64,6 +64,14 @@ struct MarkCounter {
 
 typedef struct MarkCounter MarkCounter;
 
+struct DataCounter {
+  char **pmarker;
+  int counter;
+  struct DataCounter *next;
+};
+
+typedef struct DataCounter DataCounter;
+
 extern CreateState create_in_same_dir(char **argv, int argc);
 extern CreateState create_different_filepath(char **argv, int argc);
 extern CreateState create_different_dir(char **argv, int argc);
@@ -76,6 +84,12 @@ extern void count_marker(MarkCounter *pcounter, char **argv, int argc);
 extern CreateState validate_marker(MarkCounter *pcounter, char *option,
                                    int option_counter);
 extern void count_option(int *pcounter, char *option, char **argv, int argc);
+extern void find_marker(DataCounter *pcounter, char *marker, char **argv,
+                        int argc);
+extern void count_data(DataCounter *pcounter, char **not_allowed,
+                       int not_allowed_len, char *end_marker, char **argv,
+                       int argc);
+extern CreateState validate_data_count(DataCounter *pcounter);
 extern CreateState count_num(ArgumentControlLer *pcontroller);
 
 extern bool is_arg_valid(const char *argument, size_t argument_len);

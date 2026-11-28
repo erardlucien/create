@@ -17,6 +17,7 @@ OBJ_DIR = build/tests/objects
 PCH_DIR = build/tests/pch
 BIN_DIR = build/tests/bin
 CFLAGS = -g -Wall -Werror -pedantic -O1 -fsanitize=address,undefined
+CPPFLAGS = -MMD -MP
 LDFLAGS =  -fsanitize=address,undefined
 dirs = $(COMON_DIR) $(LINUX_COMMON_DIR) $(LINUX_CDF_DIR) $(LINUX_CNF_DIR) $(TESTS_LINUX_DIR)
 OBJ_SUBDIRS = $(addprefix $(OBJ_DIR)/, $(dirs))
@@ -30,7 +31,7 @@ $(PCH_DIR)/$(1)/%.h.gch: $(1)/include/%.h | $(PCH_DIR)/$(1)
 endef
 define OBJ_RULE
 $(OBJ_DIR)/$(1)/%.o: $(1)/src/%.c | $(OBJ_DIR)/$(1)
-	$(CC) $(CFLAGS) -c $$< -o $$@ 
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $$< -o $$@ 
 endef
 $(BIN_SUBDIRS) $(PCH_SUBDIRS) $(OBJ_SUBDIRS):
 	mkdir -p $@

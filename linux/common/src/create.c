@@ -31,6 +31,9 @@ static CreateState find_index_r(ArgumentControlLer *pcontroller, char *option,
                                 char **argv, int argc);
 static CreateState find_index_p(ArgumentControlLer *pcontroller, char **argv,
                                 int argc);
+
+static DataCounter gen_data_counter();
+static void free_data_counter(DataCounter **pcounter);
 CreateState extract_filename(char **filename, char *filepath,
                              size_t fpath_len) {
 
@@ -185,16 +188,6 @@ CreateState choose_option(char *option, char **argv, int argc) {
     return CREATE_NULL_POINTER_EXCEPTION;
   }
 
-  MarkCounter counter = {0, 0, 0};
-
-  count_marker(&counter, argv, argc);
-  int option_counter = 0;
-  count_option(&option_counter, option, argv, argc);
-  CreateState state = validate_marker(&counter, option, option_counter);
-  if (state != CREATE_OK) {
-    return state;
-  }
-
   AvaibleOption avaible_options[] = {{DF_OPTION, DIFFERENT_FILEPATH},
                                      {SD_OPTION, SAME_DIR},
                                      {DD_OPTION, DIFFERENT_DIRS},
@@ -210,6 +203,105 @@ CreateState choose_option(char *option, char **argv, int argc) {
     if (strlen(option) == strlen(avaible_options[i].option) &&
         strcmp(avaible_options[i].option, option) == 0) {
       option_index = avaible_options[i].option_index;
+    }
+  }
+
+  if (option_index == INVALID_OPTION) {
+    return CREATE_INVALID_OPTION;
+  }
+
+  MarkCounter counter = {0, 0, 0};
+
+  count_marker(&counter, argv, argc);
+  int option_counter = 0;
+  count_option(&option_counter, option, argv, argc);
+  CreateState state = validate_marker(&counter, option, option_counter);
+  if (state != CREATE_OK) {
+    return state;
+  }
+
+  if (option_index == PARENT) {
+    DataCounter *parent_counter = (DataCounter *)malloc(sizeof(DataCounter));
+    if (parent_counter == NULL) {
+      return CREATE_NULL_POINTER_EXCEPTION;
+    }
+
+    *parent_counter = gen_data_counter();
+    DataCounter *files_counter = (DataCounter *)malloc(sizeof(DataCounter));
+    if (files_counter == NULL) {
+      free_data_counter(&parent_counter);
+      return CREATE_NULL_POINTER_EXCEPTION;
+    }
+    *files_counter = gen_data_counter();
+    char *not_allowed_p[] = {FILE_MARKER, option};
+    char *not_allowed_c[] = {CHILD_MARKER, option};
+    char *not_allowed_f[] = {FILE_MARKER, CHILD_MARKER};
+    int not_allowed_len = sizeof(not_allowed_p) / sizeof(not_allowed_p[0]);
+
+    find_marker(parent_counter, option, argv, argc);
+    find_marker(files_counter, FILE_MARKER, argv, argc);
+
+    count_data(parent_counter, not_allowed_p, not_allowed_len, CHILD_MARKER,
+               argv, argc);
+    count_data(files_counter, not_allowed_f, not_allowed_len, option, argv,
+               argc);
+
+    state = validate_data_count(parent_counter);
+    if (state != CREATE_OK) {
+      free_data_counter(&files_counter);
+      return state;
+    }
+
+    state = validate_data_count(files_counter);
+    if (state != CREATE_OK) {
+      return state;
+    }
+    DataCounter *child_counter = (DataCounter *)malloc(sizeof(DataCounter));
+    if (child_counter == NULL) {
+      return CREATE_NULL_POINTER_EXCEPTION;
+    }
+    *child_counter = gen_data_counter();
+    find_marker(child_counter, CHILD_MARKER, argv, argc);
+    count_data(child_counter, not_allowed_c, not_allowed_len, FILE_MARKER, argv,
+               argc);
+    state = validate_data_count(child_counter);
+    if (state != CREATE_OK) {
+      return state;
+    }
+  } else {
+    DataCounter *parent_counter = (DataCounter *)malloc(sizeof(DataCounter));
+    if (parent_counter == NULL) {
+      return CREATE_NULL_POINTER_EXCEPTION;
+    }
+
+    *parent_counter = gen_data_counter();
+    DataCounter *files_counter = (DataCounter *)malloc(sizeof(DataCounter));
+    if (files_counter == NULL) {
+      free_data_counter(&parent_counter);
+      return CREATE_NULL_POINTER_EXCEPTION;
+    }
+    *files_counter = gen_data_counter();
+    char *not_allowed_p[] = {CHILD_MARKER, option};
+    char *not_allowed_f[] = {FILE_MARKER, CHILD_MARKER};
+    int not_allowed_len = sizeof(not_allowed_p) / sizeof(not_allowed_p[0]);
+
+    find_marker(parent_counter, option, argv, argc);
+    find_marker(files_counter, FILE_MARKER, argv, argc);
+
+    count_data(parent_counter, not_allowed_p, not_allowed_len, FILE_MARKER,
+               argv, argc);
+    count_data(files_counter, not_allowed_f, not_allowed_len, option, argv,
+               argc);
+
+    state = validate_data_count(parent_counter);
+    if (state != CREATE_OK) {
+      free_data_counter(&files_counter);
+      return state;
+    }
+
+    state = validate_data_count(files_counter);
+    if (state != CREATE_OK) {
+      return state;
     }
   }
 
@@ -659,12 +751,100 @@ CreateState validate_marker(MarkCounter *pcounter, char *option,
     return CREATE_OK;
   }
 
-  if (pcounter->pmarker_counter != option_counter ||
-      pcounter->pmarker_counter != pcounter->cmarker_counter) {
+  if (strncmp(option, DD_OPTION, strlen(option) + 1) == 0 &&
+      pcounter->cmarker_counter != 0) {
+    return CREATE_INVALID_BLOCK_LIST;
+  }
+
+  if (strncmp(option, DD_OPTION, strlen(option) + 1) != 0 &&
+      (pcounter->pmarker_counter != option_counter ||
+       pcounter->pmarker_counter != pcounter->cmarker_counter)) {
     return CREATE_INVALID_BLOCK_LIST;
   }
 
   return pcounter->fmarker_counter != pcounter->pmarker_counter
              ? CREATE_INVALID_BLOCK_LIST
              : CREATE_OK;
+}
+
+static DataCounter gen_data_counter() {
+  DataCounter counter = {NULL, 0, NULL};
+  return counter;
+}
+
+static void free_data_counter(DataCounter **pcounter) {
+  DataCounter *current = *pcounter;
+  while (current != NULL) {
+    DataCounter *next = current->next;
+    free(current);
+    current = next;
+  }
+  *pcounter = NULL;
+}
+
+void find_marker(DataCounter *pcounter, char *marker, char **argv, int argc) {
+  if (pcounter == NULL || marker == NULL || argv == NULL || argc == 0) {
+    return;
+  }
+
+  DataCounter *next = pcounter;
+  for (int i = 0; i < argc; ++i) {
+    if (strncmp(argv[i], marker, strlen(argv[i]) + 1) == 0 &&
+        next == pcounter) {
+      next->pmarker = argv + i;
+    } else if (strncmp(argv[i], marker, strlen(argv[i]) + 1) == 0) {
+      if (next->next == NULL) {
+        next->next = (DataCounter *)malloc(sizeof(DataCounter));
+        if (next->next == NULL) {
+          return;
+        }
+        *next->next = gen_data_counter();
+      }
+      next = next;
+      next->pmarker = argv + i;
+    }
+  }
+}
+
+void count_data(DataCounter *pcounter, char **not_allowed, int not_allowed_len,
+                char *end_marker, char **argv, int argc) {
+  if (pcounter == NULL || not_allowed == NULL || end_marker == NULL) {
+    return;
+  }
+  DataCounter *current = pcounter;
+
+  while (current != NULL) {
+    char **ptr = current->pmarker;
+    int i = (current->pmarker - argv);
+    while (i < argc && *ptr != NULL &&
+           strncmp(*ptr, end_marker, strlen(*ptr) + 1) != 0) {
+      for (int j = 0; j < not_allowed_len; ++j) {
+        if (strncmp(*ptr, not_allowed[j], strlen(*ptr) + 1) == 0) {
+          current->counter = 0;
+          return;
+        }
+      }
+      ++current->counter;
+      ++ptr;
+      ++i;
+    }
+    current = current->next;
+  }
+}
+
+CreateState validate_data_count(DataCounter *pcounter) {
+  if (pcounter == NULL) {
+    return CREATE_NULL_POINTER_EXCEPTION;
+  }
+
+  DataCounter *current = pcounter;
+  while (current != NULL) {
+    if (current->counter == 0) {
+      free_data_counter(&pcounter);
+      return CREATE_INVALID_DATA;
+    }
+    current = current->next;
+  }
+  free_data_counter(&pcounter);
+  return CREATE_OK;
 }
