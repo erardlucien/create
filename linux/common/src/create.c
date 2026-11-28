@@ -790,9 +790,10 @@ void find_marker(DataCounter *pcounter, char *marker, char **argv, int argc) {
   DataCounter *next = pcounter;
   for (int i = 0; i < argc; ++i) {
     if (strncmp(argv[i], marker, strlen(argv[i]) + 1) == 0 &&
-        next == pcounter) {
+        next == pcounter && pcounter->pmarker == NULL) {
       next->pmarker = argv + i;
-    } else if (strncmp(argv[i], marker, strlen(argv[i]) + 1) == 0) {
+    } else if (strncmp(argv[i], marker, strlen(argv[i]) + 1) == 0 &&
+               next->pmarker != NULL) {
       if (next->next == NULL) {
         next->next = (DataCounter *)malloc(sizeof(DataCounter));
         if (next->next == NULL) {
@@ -800,7 +801,7 @@ void find_marker(DataCounter *pcounter, char *marker, char **argv, int argc) {
         }
         *next->next = gen_data_counter();
       }
-      next = next;
+      next = next->next;
       next->pmarker = argv + i;
     }
   }
@@ -814,7 +815,7 @@ void count_data(DataCounter *pcounter, char **not_allowed, int not_allowed_len,
   DataCounter *current = pcounter;
 
   while (current != NULL) {
-    char **ptr = current->pmarker;
+    char **ptr = current->pmarker + 1;
     int i = (current->pmarker - argv);
     while (i < argc && *ptr != NULL &&
            strncmp(*ptr, end_marker, strlen(*ptr) + 1) != 0) {
